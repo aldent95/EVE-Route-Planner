@@ -2,17 +2,14 @@
 
 
 class System:
-    __exits = [];
-    __gatePos = {};
-    __sysID;
-    __name;
-    __constellation;
-    __region;
-    def __int__(self, sysID, name, constellation, region):
-        self.sysID = __sysID;
-        self.name = __name;
-        self.constellation = __constellation;
-        self.region = __region;
+    
+    def __init__(self, name, constellation, region, sysID, x, y, z, security):
+        self.__sysID = sysID;
+        self.__name = name;
+        self.__constellation = constellation;
+        self.__region = region;
+        self.__pos = [x,y,z];
+        self.__secutiry = security;
     def addExit(self, exit):
         self.__exits.append(exit);
     def addGatePos(self, gate, pos):
@@ -34,3 +31,6 @@ class System:
         return self.__constellation;
     def getRegion(self):
         return self.__region;
+    def toString(self):
+        tempstr = self.__name + " " + self.__region;
+        return tempstr;
