@@ -1,12 +1,15 @@
 #!/usr/bin/python
 import os
 from System import System
+from GUI import UI
 
     
 #finder;
 systems = {};
+gui = "";
 def __init__():
      load();
+     setupGUI();
 def load():
     os.chdir(os.path.dirname(sys.argv[0]));
     lines = [];
@@ -31,6 +34,7 @@ def load():
          tempSys.addGatePos(line[5], pos);
     return
 def setupGUI():
+    gui = UI(); 
     return
 def setupRouteFinder():
     return
