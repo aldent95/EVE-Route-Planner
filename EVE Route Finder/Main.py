@@ -34,7 +34,7 @@ def load():
          tempSys.addGatePos(line[5], pos);
     return
 def setupGUI():
-    gui = UI(); 
+    gui = UI(None); 
     return
 def setupRouteFinder():
     return
