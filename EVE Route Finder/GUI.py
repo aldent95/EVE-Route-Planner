@@ -11,11 +11,7 @@ from SettingsMenu import SettingsMenu
 
 class UI(Tk):
     def initialize(self, namesList):
-<<<<<<< HEAD
         #Handles setting up most of the GUI
-=======
-    #Handles setting up most of the GUI
->>>>>>> origin/master
         w = 500;#Window width
         h = 500;#Window height
         sw = self.winfo_screenwidth();#Gets screen width
@@ -52,45 +48,28 @@ class UI(Tk):
     def configureMenu(self):
         #Handles configuring and setting up the menus
         menu = Menu(self);#Setup the menu bar
-<<<<<<< HEAD
         menu.add_command(label="Settings",command=self.displaySettings);
         menu.add_command(label="Help",command=self.displayHelp);
         self.config(menu=menu);
-
     def displaySettings(self):
         self.helpMenu.deiconify();
     def updateHelp(self, helpMenu):
         self.helpMenu=helpMenu;
     def displayHelp(self):
         self.helpMenu.deiconify();
-=======
-        filemenu = Menu(menu,tearoff=0);#Setup the filemenu
-        menu.add_cascade(label="File",menu=filemenu);#Place the filemenu as a cascading menu
-        self.config(menu=menu);#Configure the meun for the GUI to be the menu we just set up
-        
->>>>>>> origin/master
     def setupButtons(self):
         #Handles creating and setting up all the buttons (Not really in use yet)
         quitButton= Button(self, text="Quit", command=self.quit)
         quitButton.place(x=0,y=0);
     def quit(self):
     #Handles quitting the program, not working yet
-<<<<<<< HEAD
-        return; 
-=======
        return; 
->>>>>>> origin/master
     def __init__(self, parent, namesList):
     #Handles the initial call to create a GUI
        Tk.__init__(self,parent);#Parent constructor
        self.parent = parent;#Store the parent
        self.initialize(namesList);#Initilize the GUI
-<<<<<<< HEAD
        self.helpMenu = HelpMenu(self, self);
        self.settingsMenu = SettingsMenu(self, self);
        self.mainloop();#Start the main loop
 
-
-=======
-       self.mainloop();#Start the main loop
->>>>>>> origin/master
