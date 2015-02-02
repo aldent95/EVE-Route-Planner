@@ -20,6 +20,14 @@ class HelpMenu(Toplevel):
 
     def setup(self):
         self.columnconfigure(0, weight=1)
+        lines = []
+        with open("Help.txt", 'r') as helpFile:
+            for line in helpFile:
+                lines.append(line.strip('\n'))
+        for i in range(0,len(lines)-1):
+            self.rowconfigure(i, weight=1)
+            Label(self, padx=2, text=lines[i]).grid(row=i, column=0, sticky='E'+'W')
+        helpFile.close()
         w = 400  # Sets up the window position on the screen
         h = 150
         sw = self.winfo_screenwidth()
@@ -31,7 +39,6 @@ class HelpMenu(Toplevel):
         self.resizable(width=0, height=0)
         self.grid()
         self.title("Help Menu")
-        self.b1 = Button(self, command=self.hide, text="Close")
-        self.b1.grid(column=0, row=0)
+        
 
 
