@@ -55,9 +55,7 @@ class UI(Tk):
         menu.add_command(label="Help",command=self.displayHelp);
         self.config(menu=menu);
     def displaySettings(self):
-        self.helpMenu.deiconify();
-    def updateHelp(self, helpMenu):
-        self.helpMenu=helpMenu;
+        self.settingsMenu.deiconify();
     def displayHelp(self):
         self.helpMenu.deiconify();
     def setupButtons(self):
@@ -71,8 +69,8 @@ class UI(Tk):
        Tk.__init__(self,parent);#Parent constructor
        self.parent = parent;#Store the parent
        self.initialize(namesList);#Initilize the GUI
-       self.helpMenu = HelpMenu(self, self);
-       self.settingsMenu = SettingsMenu(self, self);
+       self.helpMenu = HelpMenu(self);
+       self.settingsMenu = SettingsMenu(self);
        #Set up the observe so that we can tell it when we want a route
        self.observer = observer
        self.mainloop();#Start the main loop

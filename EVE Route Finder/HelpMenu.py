@@ -7,10 +7,8 @@ except ImportError:
 class HelpMenu(Toplevel):
     def hide(self):  # Hides the window
         self.withdraw()
-        self.observer.updateHelp(self)
-    def __init__(self, parent, observer):
+    def __init__(self, parent):
         Toplevel.__init__(self, parent)
-        self.observer = observer  # Observer is the GUI, this is here just so I can update the GUI when I withdraw this window
         self.setup() 
         self.protocol("WM_DELETE_WINDOW", self.hide)  # Changes the close button to just hide the window
         self.withdraw()
