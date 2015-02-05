@@ -20,7 +20,6 @@ class HelpMenu(Toplevel):
         with open("Help.txt", 'r') as helpFile:
             for line in helpFile:
                 lines.append(line.strip('\n'))
-        print (len(lines))
         for i in range(0,len(lines)):
             self.rowconfigure(i, weight=1)
             Label(self, padx=2, text=lines[i]).grid(row=i, column=0, sticky='E'+'W')

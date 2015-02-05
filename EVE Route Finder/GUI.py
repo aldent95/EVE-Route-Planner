@@ -26,6 +26,7 @@ class UI(Tk):
         self.columnconfigure(1,weight=1);
         self.columnconfigure(2,weight=1);
         self.columnconfigure(3,weight=1);
+        self.columnconfigure(4,weight=1);
         self.rowconfigure(1,weight=1);#Configures the row uesd for the text area to automaticly resize
         
         self.title("EVE Route Finder");#Sets the title
@@ -41,9 +42,11 @@ class UI(Tk):
         self.des.grid(column=3,row=0,sticky='E'+'W');#Place the destination entry box
         
         self.output = Text(self);#Setup the text area
-        self.output.grid(column=0,row=1,sticky='E'+'W'+'N'+'S',columnspan=4);#Place the text area, spanning 4 columns
+        self.output.grid(column=0,row=1,sticky='E'+'W'+'N'+'S',columnspan=5);#Place the text area, spanning 4 columns
         self.output.insert('end',"Output test");#Add some testing text to the text area
         self.output.configure(state='disabled');#Disable the text area
+
+        self.setupButtons();
         
     def configureMenu(self):
         #Handles configuring and setting up the menus
@@ -58,12 +61,11 @@ class UI(Tk):
     def displayHelp(self):
         self.helpMenu.deiconify();
     def setupButtons(self):
-        #Handles creating and setting up all the buttons (Not really in use yet)
-        quitButton= Button(self, text="Quit", command=self.quit)
-        quitButton.place(x=0,y=0);
-    def quit(self):
-    #Handles quitting the program, not working yet
-       return; 
+        #Handles creating and setting up all the buttons
+        calculateButton= Button(self, text="Calculate", command=self.getRoute)
+        calculateButton.grid(column=4,row=0,sticky='E'+'W')
+    def getRoute(self):
+        return;
     def __init__(self, parent, namesList):
     #Handles the initial call to create a GUI
        Tk.__init__(self,parent);#Parent constructor
