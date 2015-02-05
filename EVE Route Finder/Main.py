@@ -25,7 +25,7 @@ class Main:
          with open("Stargates.txt", 'r') as gatesFile:
               for line in gatesFile:
                    lines.append(line.strip('\n'))
-         for i in range(0,len(lines)-1):
+         for i in range(0,len(lines)):
               line = lines[i].split('\t');
               tempSys = self.systems[line[4]];
               tempSys.addExit(line[5]);

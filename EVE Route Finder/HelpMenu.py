@@ -14,17 +14,14 @@ class HelpMenu(Toplevel):
         self.setup() 
         self.protocol("WM_DELETE_WINDOW", self.hide)  # Changes the close button to just hide the window
         self.withdraw()
-
-        
-        
-
     def setup(self):
         self.columnconfigure(0, weight=1)
         lines = []
         with open("Help.txt", 'r') as helpFile:
             for line in helpFile:
                 lines.append(line.strip('\n'))
-        for i in range(0,len(lines)-1):
+        print (len(lines))
+        for i in range(0,len(lines)):
             self.rowconfigure(i, weight=1)
             Label(self, padx=2, text=lines[i]).grid(row=i, column=0, sticky='E'+'W')
         helpFile.close()
