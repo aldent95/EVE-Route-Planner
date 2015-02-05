@@ -31,20 +31,21 @@ class Main:
               pos = [line[1], line[2], line[3]];
               tempSys.addGatePos(line[5], pos);
          return
-     def setupGUI(self):
-         self.gui = UI(None, self.nameList); 
+     def setupUI(self):
+         self.gui = UI(None, self.nameList, self); 
          return
      def setupRouteFinder(self):
          return
      def findRoute(self):
-         return
+          print("working")
+          return
      def __init__(self):
           self.systems = {};
           self.gui = "";
           self.nameList = [];
           
           self.load();
-          self.setupGUI();
+          self.setupUI();
           
 
 if __name__ == "__main__":

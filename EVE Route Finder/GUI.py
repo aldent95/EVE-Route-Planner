@@ -65,13 +65,15 @@ class UI(Tk):
         calculateButton= Button(self, text="Calculate", command=self.getRoute)
         calculateButton.grid(column=4,row=0,sticky='E'+'W')
     def getRoute(self):
-        return;
-    def __init__(self, parent, namesList):
+        self.observer.findRoute()
+    def __init__(self, parent, namesList, observer):
     #Handles the initial call to create a GUI
        Tk.__init__(self,parent);#Parent constructor
        self.parent = parent;#Store the parent
        self.initialize(namesList);#Initilize the GUI
        self.helpMenu = HelpMenu(self, self);
        self.settingsMenu = SettingsMenu(self, self);
+       #Set up the observe so that we can tell it when we want a route
+       self.observer = observer
        self.mainloop();#Start the main loop
 
