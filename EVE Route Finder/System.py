@@ -39,9 +39,20 @@ class System:
         return self.__constellation;
     def getRegion(self):
         return self.__region;
-    def getDistance(self, gate1, gate2):
+    def getPOS(self):
+        return self.__pos
+    def getGateDistance(self, gate1, gate2):
         pos1 = self.__gatePos[gate1];
         pos2 = self.__gatePos[gate2];
+        x = math.pow((float(pos2[0])-float(pos1[0])),2);
+        y = math.pow((float(pos2[1])-float(pos1[1])),2);
+        z = math.pow((float(pos2[2])-float(pos1[2])),2);
+        distance = (math.sqrt(x+y+z))/1000;
+        distance = round(distance/149597871,1);
+        return distance;
+    def getSysDistnace(self, other):
+        pos1 = self.getPOS();
+        pos2 = other.getPOS();
         x = math.pow((float(pos2[0])-float(pos1[0])),2);
         y = math.pow((float(pos2[1])-float(pos1[1])),2);
         z = math.pow((float(pos2[2])-float(pos1[2])),2);

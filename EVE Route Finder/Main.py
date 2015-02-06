@@ -2,7 +2,7 @@
 import os
 from System import System
 from GUI import UI
-
+from JumpsRoute import JumpsRoute
     
 #finder;
 
@@ -18,6 +18,7 @@ class Main:
               tempSys = System(line[0], line[1], line[2], line[3], line[4], line[5], line[6],line[7])
               self.systems[line[3]] = tempSys;
               self.nameList.append(line[0]);
+              self.sysNames[line[0]] = line[3];
          sysFile.close();
          self.nameList= sorted(self.nameList);
          lines = [];
@@ -35,15 +36,25 @@ class Main:
          self.gui = UI(None, self.nameList, self); 
          return
      def setupRouteFinder(self):
-         return
-     def findRoute(self):
-          print("working")
-          return
+         #Get route type setting from UI
+          #Get ship settings
+          #Get Security filter setting
+          #Get avoidance list
+          #Get specific security status filtering
+          #Get Sov setting
+          #Generate route finder based on settings
+          self.routeFinder = JumpsRoute()
+     def findRoute(self, origin, destination):
+          self.routeFinder = JumpsRoute(origin, destination)
+          jumpsRoute = routeFinder.getRoute()
+          #setupRouteFinder()
+          return jumpsRoute
      def __init__(self):
           self.systems = {};
           self.gui = "";
           self.nameList = [];
-          
+          self.sysNames={}
+          self.routeFinder = ""
           self.load();
           self.setupUI();
           

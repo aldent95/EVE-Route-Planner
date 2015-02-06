@@ -8,6 +8,7 @@ except ImportError:
 from AutoCompleteEntry import AutoCompleteEntry
 from HelpMenu import HelpMenu
 from SettingsMenu import SettingsMenu
+import webbrowser
 
 class UI(Tk):
     def initialize(self, namesList):
@@ -40,14 +41,19 @@ class UI(Tk):
         Label(self,padx=2,text="Destination").grid(row=0,column=2,sticky='E'+'W');#Setup and place the Destination label
         self.des = AutoCompleteEntry(self,namesList);#Setup the destination autocomplete entry box
         self.des.grid(column=3,row=0,sticky='E'+'W');#Place the destination entry box
-        
+
+        self.configureOutput()
+        self.setupButtons();
+    def configureOutput(self):
         self.output = Text(self);#Setup the text area
         self.output.grid(column=0,row=1,sticky='E'+'W'+'N'+'S',columnspan=5);#Place the text area, spanning 4 columns
-        self.output.insert('end',"Output test");#Add some testing text to the text area
+        self.output.insert('end',"Output\n test\n");#Add some testing text to the text area
         self.output.configure(state='disabled');#Disable the text area
 
-        self.setupButtons();
-        
+        self.output.tag_config("a", foreground="blue", underline=1)
+        self.output.tag_bind("a", "<Button-1>", self.showLink)
+    def showLink(self, event):
+        webbrowser.open(self.dotlanURL)
     def configureMenu(self):
         #Handles configuring and setting up the menus
         menu = Menu(self);#Setup the menu bar
@@ -63,7 +69,31 @@ class UI(Tk):
         calculateButton= Button(self, text="Calculate", command=self.getRoute)
         calculateButton.grid(column=4,row=0,sticky='E'+'W')
     def getRoute(self):
-        self.observer.findRoute()
+        systems = self.observer.findRoute(self.origin.get(),self.des.get())
+        dotlanURL = buildDotlan(systems)
+        jumps = len(systems)-1
+        distance = 0
+        for i in range(0,len(systems)):
+            if(i==0 or i==len(systems)):
+               continue
+            else:
+               distance = distance + systems[i].getGateDistance(systems[i-1].getID(),systems[i+1].getID());
+        self.output.configure(state='enabled')
+        self.output.delete(1.0,'end');
+        self.output.insert('end', "Route information\n Total Jumps: " + jumps + " Total warp distance: " + distance)
+        self.output.insert('end', "\n Dotlan link click ")
+        self.output.insert('end', "here", "a")
+        self.output.insert('end', "\n")
+        count = 0
+        routeString = ""
+        for i in range(0,len(systems)):
+            if(i != len(systems)):
+                routeString += systems[i].getName() + " --> "
+                count+=1
+                if(count == 5):
+                    count = 0
+                    self.output.insert('end', routeString + "\n")
+                    routeString =""    
     def __init__(self, parent, namesList, observer):
     #Handles the initial call to create a GUI
        Tk.__init__(self,parent);#Parent constructor
@@ -73,5 +103,14 @@ class UI(Tk):
        self.settingsMenu = SettingsMenu(self);
        #Set up the observe so that we can tell it when we want a route
        self.observer = observer
+       self.dotlanURL = "evemaps.dotlan.net"
        self.mainloop();#Start the main loop
 
+def buildDotlan(systems):
+    url = "evemaps.dotlan.net/route/"
+    for i in range(0,len(systems)):
+        if(i != len(systems)):
+            url+=systems[i].getName() + ":"
+        else:
+            url+=systems[i].getName()
+    return url

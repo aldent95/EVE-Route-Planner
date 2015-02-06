@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
 
-class System:
-    
+class JumpsRoute:
+    def __init__(self):
+        return
