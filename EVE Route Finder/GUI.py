@@ -70,30 +70,38 @@ class UI(Tk):
         calculateButton.grid(column=4,row=0,sticky='E'+'W')
     def getRoute(self):
         systems = self.observer.findRoute(self.origin.get(),self.des.get())
-        dotlanURL = buildDotlan(systems)
+        self.dotlanURL = buildDotlan(systems)
         jumps = len(systems)-1
         distance = 0
         for i in range(0,len(systems)):
-            if(i==0 or i==len(systems)):
+            if(i==0 or i==len(systems)-1):
                continue
             else:
+               print(i)
                distance = distance + systems[i].getGateDistance(systems[i-1].getID(),systems[i+1].getID());
-        self.output.configure(state='enabled')
+        self.output.configure(state='normal')
         self.output.delete(1.0,'end');
-        self.output.insert('end', "Route information\n Total Jumps: " + jumps + " Total warp distance: " + distance)
+        self.output.insert('end', "Route information\n Total Jumps: " + str(jumps) + " Total warp distance: " + str(distance))
         self.output.insert('end', "\n Dotlan link click ")
         self.output.insert('end', "here", "a")
         self.output.insert('end', "\n")
         count = 0
         routeString = ""
-        for i in range(0,len(systems)):
-            if(i != len(systems)):
-                routeString += systems[i].getName() + " --> "
-                count+=1
-                if(count == 5):
-                    count = 0
-                    self.output.insert('end', routeString + "\n")
-                    routeString =""    
+        for j in range(0,len(systems)):
+            print(j)
+            print(routeString)
+            if(j != len(systems)-1):
+                routeString += systems[j].getName() + " --> "
+            else:
+                routeString += systems[j].getName()
+            count+=1
+            if(count == 5):
+                count = 0
+                self.output.insert('end', routeString + "\n")
+                routeString =""
+        if(count > 0):
+            self.output.insert('end', routeString + "\n")
+        self.output.configure(state='disabled')
     def __init__(self, parent, namesList, observer):
     #Handles the initial call to create a GUI
        Tk.__init__(self,parent);#Parent constructor

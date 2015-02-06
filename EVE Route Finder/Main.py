@@ -45,8 +45,12 @@ class Main:
           #Generate route finder based on settings
           self.routeFinder = JumpsRoute()
      def findRoute(self, origin, destination):
-          self.routeFinder = JumpsRoute(origin, destination)
-          jumpsRoute = routeFinder.getRoute()
+          #self.routeFinder = JumpsRoute(origin, destination)
+          #jumpsRoute = routeFinder.getRoute()
+          jumpsRoute = []
+          jumpsRoute.append(self.systems[self.sysNames['Teshkat']])
+          jumpsRoute.append(self.systems[self.sysNames['Anjedin']])
+          jumpsRoute.append(self.systems[self.sysNames['Tividu']])
           #setupRouteFinder()
           return jumpsRoute
      def __init__(self):
