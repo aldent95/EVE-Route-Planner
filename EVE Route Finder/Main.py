@@ -28,7 +28,7 @@ class Main:
          for i in range(0,len(lines)):
               line = lines[i].split('\t');
               tempSys = self.systems[line[4]];
-              tempSys.addExit(line[5]);
+              tempSys.addadjSys(line[5]);
               pos = [line[1], line[2], line[3]];
               tempSys.addGatePos(line[5], pos);
          return
@@ -45,12 +45,10 @@ class Main:
           #Generate route finder based on settings
           self.routeFinder = JumpsRoute()
      def findRoute(self, origin, destination):
-          #self.routeFinder = JumpsRoute(origin, destination)
-          #jumpsRoute = routeFinder.getRoute()
-          jumpsRoute = []
-          jumpsRoute.append(self.systems[self.sysNames['Teshkat']])
-          jumpsRoute.append(self.systems[self.sysNames['Anjedin']])
-          jumpsRoute.append(self.systems[self.sysNames['Tividu']])
+          oriSys = self.systems[self.sysNames[origin]]
+          destSys = self.systems[self.sysNames[destination]]
+          self.routeFinder = JumpsRoute(oriSys, destSys, self.systems)
+          jumpsRoute = self.routeFinder.getRoute()
           #setupRouteFinder()
           return jumpsRoute
      def __init__(self):
