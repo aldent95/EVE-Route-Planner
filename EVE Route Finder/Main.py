@@ -2,7 +2,7 @@
 import os
 from System import System
 from GUI import UI
-from JumpsRoute import JumpsRoute
+from Routes import RouteFinder
     
 #finder;
 
@@ -43,14 +43,14 @@ class Main:
           #Get specific security status filtering
           #Get Sov setting
           #Generate route finder based on settings
-          self.routeFinder = JumpsRoute()
+          self.routeFinder = RouteFinder()
      def findRoute(self, origin, destination):
           oriSys = self.systems[self.sysNames[origin]]
           destSys = self.systems[self.sysNames[destination]]
-          self.routeFinder = JumpsRoute(oriSys, destSys, self.systems)
-          jumpsRoute = self.routeFinder.getRoute()
+          self.routeFinder = RouteFinder(oriSys, destSys, self.systems)
+          route = self.routeFinder.getRoute()
           #setupRouteFinder()
-          return jumpsRoute
+          return route
      def __init__(self):
           self.systems = {};
           self.gui = "";

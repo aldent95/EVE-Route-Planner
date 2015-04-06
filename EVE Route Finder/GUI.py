@@ -77,7 +77,6 @@ class UI(Tk):
             if(i==0 or i==len(systems)-1):
                continue
             else:
-               print(i)
                distance = distance + systems[i].getGateDistance(systems[i-1].getID(),systems[i+1].getID());
         self.output.configure(state='normal')
         self.output.delete(1.0,'end');
