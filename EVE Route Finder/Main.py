@@ -49,7 +49,7 @@ class Main:
           destSys = self.systems[self.sysNames[destination]] #Get the destination system
           self.routeFinder = RouteFinder(oriSys, destSys, self.systems) #Set up the route finder **TEMP**
           #setupRouteFinder()
-          route = self.routeFinder.getRoute('j') #Get the route
+          route = self.routeFinder.getRoute('dl') #Get the route
           return route
      def __init__(self):
           self.systems = {}; #Initilise the systems dict
@@ -59,6 +59,8 @@ class Main:
           self.routeFinder = "" #Initilise the routefinder object
           self.load(); #Load the files
           self.setupUI(); #Setup the gui
+          self.findRoute("Amarr", "Jita")
+          print("Finding Route")
           
 
 if __name__ == "__main__":

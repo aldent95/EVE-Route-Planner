@@ -2,60 +2,99 @@
 import heapq
 
 class RouteFinder:
-    def __init__(self, origin, destination, systems):
-        self.start=origin
-        self.end=destination
-        self.opened = []
-        heapq.heapify(self.opened)
-        self.closed=set()
-        self.systems = systems
-    def getSys(self, sysID):
+    def __init__(self, origin, destination, systems): #Setup the route finder
+        self.mainStart=origin #initialize the main start system 
+        self.mainEnd=destination #initialize the main end system
+        self.opened = [] #initialize the opened array
+        heapq.heapify(self.opened) #Set the opened array to be a heap queue
+        self.closed=set() #initialize the closed set
+        self.systems = systems #initialize the systems array
+    def getSys(self, sysID): #Returns a system object given an id
         return self.systems[sysID]
-    def get_h(self, node):
-        return node.getSysDistance(self.end)
-    def getAdj(self, node):
+    def get_h(self, node, routeType, start="", end=""): #Get the estimated cost of getting to the end system. Different calculations are used depending on what
+        #is currently wanted
+        if(start == ""):
+            start = self.mainStart
+        if(end == ""):
+            end = self.mainEnd
+        if(routeType == "dl"): #If we are using the default route
+            return node.getSysDistance(end) #Then h is calculated by the system module
+        if(routeType == "j"): #If we are using the jumps route
+            print(start.getName() + "\t" + end.getName())
+            route = self.lyDistanceRoute(start, end)
+            print(type(route))
+            return len(route)-1 #Get the amount of jumps from the default route calculation
+    def getAdj(self, node): #Get the adjacent systems for a given system
         systems = node.getadjSyss()
         return systems
-    def updateNode(self, adj, node):
-        adj.g = node.g+adj.getSysDistance(node)
-        adj.h = self.get_h(adj)
-        adj.parent = node
-        adj.f = adj.h + adj.g
-    def getRoute(self, routeType): #j for jumps, dl for default lightyear distance, du for au distance
+    def updateNode(self, adj, node, routeType): #Update a system
+        adj.g = node.g+adj.getSysDistance(node) #Update the cost of getting to the current system from the start
+        adj.h = self.get_h(adj, routeType) #Update the estimate of getting to the end from the current system
+        adj.parent = node #Set the parent to be the node we came from
+        adj.f = adj.h + adj.g #Set the estimated final cost for the system
+    def getRoute(self, routeType): #Main get route method. Calls different methods based on what route type we want
+        #j for jumps, dl for default lightyear distance, du for au distance
         if(routeType == "j"):
             return self.jumpsRoute()
         if(routeType == "dl"):
-            return self.lyDistanceRoute()
+            route =  self.lyDistanceRoute()
+            self.reset()
+            print(type(route))
+            for sys in route:
+                print(sys.getName())
+                print(type(sys))
+                print(self.get_h(sys, "j", sys))
+                self.reset()
+            return route
         if(routeType == "du"):
             return self.auDistanceRoute()
-    def buildRoute(self, node):
-        route = []
-        if node is self.start:
-            route.append(node)
-            return route
-        else:
-            route = self.buildRoute(node.parent)
-            route.append(node)
-            return route
-    def lyDistanceRoute(self):
-         heapq.heappush(self.opened, (self.start.f, self.start))
-         while len(self.opened):
-             f, node = heapq.heappop(self.opened)
-             self.closed.add(node)
-             if node is self.end:
-                 return self.buildRoute(node)
-             adj_ids = self.getAdj(node)
-             adj_systems = []
-             for sys in adj_ids:
-                 adj_systems.append(self.getSys(sys))
-             for adj in adj_systems:
-                 if adj not in self.closed:
-                     if (adj.f, adj) in self.opened:
-                         if adj.g > node.g + adj.getSysDistance(node):
-                             self.updateNode(adj, node)
-                     else:
-                         self.updateNode(adj, node)
-                         heapq.heappush(self.opened, (adj.f, adj))
+    def reset(self):
+        self.opened = []
+        heapq.heapify(self.opened)
+        self.closed = set()
+        print(type(self.systems))
+        count = 0
+        for name, sys in self.systems.items():
+            sys.g = 0
+            sys.h = 0
+            sys.f = 0
+            sys.parent = ""
+            count +=1
+        print(count)
+    def buildRoute(self, node): #Recursively Builds the route into an array of systems given a node/system
+        route = []#initialize the route array
+        if node is self.mainStart: #If the current node is the start node
+            route.append(node) #Append it to the array
+            return route #Return the array
+        else: #Otherwise
+            route = self.buildRoute(node.parent) #Call the method again on the parent node for the current node
+            route.append(node) #After that returns append the current node
+            return route #And return the route
+    def lyDistanceRoute(self, start="", end=""):#Default ly distance route finder
+        if(start == ""):
+            start = self.mainStart
+        if(end == ""):
+            end = self.mainEnd
+        print(start.getName() + " " + end.getName())
+        heapq.heappush(self.opened, (start.f, start)) #Add the start to the heapq
+        while len(self.opened): #While there are open nodes
+            f, node = heapq.heappop(self.opened) #Get the final estimated cost and the node at the front of the queue
+            self.closed.add(node) #Add that node to the closed list
+            if node is end: #If the node is the end node
+                print("Building route")
+                return self.buildRoute(node) #Build the route and return it
+            adj_ids = self.getAdj(node) #Get the adjacent ids for the current node
+            adj_systems = []#initialize the adjacent systems array
+            for sys in adj_ids: #For each adjacent system id
+                adj_systems.append(self.getSys(sys)) #Get the corosponding system object
+            for adj in adj_systems: #For each adjacent system 
+                if adj not in self.closed: #If the node is not closed
+                    if (adj.f, adj) in self.opened: #If the node is open
+                        if adj.g > node.g + adj.getSysDistance(node): #If current path better than found path
+                            self.updateNode(adj, node, "dl") #Update that node with the current node as parent
+                    else: #Otherwise
+                        self.updateNode(adj, node, "dl") #Update the node with the current node as parent
+                        heapq.heappush(self.opened, (adj.f, adj)) #Then push it onto the queue
     def jumpsRoute(self):
         return
     def auDistanceRoute(self):

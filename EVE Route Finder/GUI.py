@@ -111,7 +111,7 @@ class UI(Tk):
        #Set up the observe so that we can tell it when we want a route
        self.observer = observer
        self.dotlanURL = "evemaps.dotlan.net"
-       self.mainloop();#Start the main loop
+       #self.mainloop();#Start the main loop
 
 def buildDotlan(systems):
     url = "evemaps.dotlan.net/route/"
