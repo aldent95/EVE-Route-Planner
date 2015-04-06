@@ -57,9 +57,9 @@ class RouteFinder:
                          self.updateNode(adj, node)
                          heapq.heappush(self.opened, (adj.f, adj))
     def jumpsRoute(self):
-
+        return
     def auDistanceRoute(self):
-
+        return
     
         
     

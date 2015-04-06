@@ -82,7 +82,7 @@ class AutoCompleteEntry(Entry):
                 self.listBox.activate(index);#Activate the list box
 
     def findWords(self):#Handles finding the words
-        pattern = re.compile('.*' + self.var.get() + '.*');#Setup the regex pattern for finding the word
+        pattern = re.compile('.*' + self.var.get() + '.*', re.IGNORECASE);#Setup the regex pattern for finding the word
         # .* means any amount of any character, so by having that infront and behind the text from the entry box it
-        #means we can select any word that contains the entry text
+        #means we can select any word that contains the entry text.
         return [w for w in self.namesList if re.match(pattern, w)];#Search through the words list to find matchs and return them
