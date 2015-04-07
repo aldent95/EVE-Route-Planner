@@ -30,12 +30,7 @@ class RouteFinder:
         adj.setF(arrayID, adj.getH(arrayID) + adj.getH(arrayID)) #Set the estimated final cost for the system
     def getRoute(self, routeType): #Main get route method. Calls different methods based on what route type we want
         #j for jumps, dl for default lightyear distance, du for au distance
-        if(routeType == "j"):
-            return self.jumpsRoute()
-        if(routeType == "dl"):
-            return    self.lyDistanceRoute()
-        if(routeType == "du"):
-            return self.auDistanceRoute()
+        return self.routeCalc(routeType)
     def buildRoute(self, node, arrayID, start): #Recursively Builds the route into an array of systems given a node/system
         route = []#initialize the route array
         if node is start: #If the current node is the start node
@@ -45,7 +40,7 @@ class RouteFinder:
             route = self.buildRoute(node.getParent(arrayID), arrayID, start) #Call the method again on the parent node for the current node
             route.append(node) #After that returns append the current node
             return route #And return the route
-    def lyDistanceRoute(self, start="", end=""):#Default ly distance route finder
+    def routeCalc(self, routeType, start="", end="", ):#Default ly distance route finder
         if(start == ""): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
             start = self.mainStart
         if(end == ""):
@@ -73,9 +68,9 @@ class RouteFinder:
                 if adj not in closed: #If the node is not closed
                     if (adj.getF(arrayID), adj) in opened: #If the node is open
                         if adj.getG(arrayID) > node.getG(arrayID) + adj.getSysDistance(node): #If current path better than found path
-                            self.updateNode(adj, node, "dl", arrayID) #Update that node with the current node as parent
+                            self.updateNode(adj, node, routeType, arrayID) #Update that node with the current node as parent
                     else: #Otherwise
-                        self.updateNode(adj, node, "dl", arrayID) #Update the node with the current node as parent
+                        self.updateNode(adj, node, routeType, arrayID) #Update the node with the current node as parent
                         heapq.heappush(opened, (adj.getF(arrayID), adj)) #Then push it onto the queue
     def jumpsRoute(self):
         return

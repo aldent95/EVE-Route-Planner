@@ -3,6 +3,7 @@ import os
 from System import System
 from GUI import UI
 from Routes import RouteFinder
+import random
     
 #finder;
 
@@ -13,7 +14,7 @@ class Main:
          with open("Systems.txt", 'r') as sysFile: #Open the systems file
               for line in sysFile: #For each line in the file
                    lines.append(line.strip('\n'));#Append the line to the array after stripping the new line char
-         for i in range(0,len(lines)-1): #For each entry in the array
+         for i in range(0,len(lines)): #For each entry in the array
               line = lines[i].split('\t'); #Split by tabs
               tempSys = System(line[0], line[1], line[2], line[3], line[4], line[5], line[6],line[7]) #Create a sys object
               self.systems[line[3]] = tempSys; #Add the sys object to the systems dict, with the sys id as key
@@ -51,6 +52,14 @@ class Main:
           #setupRouteFinder()
           route = self.routeFinder.getRoute('dl') #Get the route
           return route
+     def runRandomTester(self):
+          runs = 10
+          for i in range(0,10):
+               start = self.systems[random.choice(list(self.systems.keys()))]
+               end = self.systems[random.choice(list(self.systems.keys()))]
+               while(start == end):
+                   end = random.choice(list(self.systems.keys()))
+               print(start.getName() + "\t" + end.getName())
      def __init__(self):
           self.systems = {}; #Initilise the systems dict
           self.gui = ""; #Initilise the gui object
@@ -59,7 +68,7 @@ class Main:
           self.routeFinder = "" #Initilise the routefinder object
           self.load(); #Load the files
           self.setupUI(); #Setup the gui
-          
+          self.runRandomTester()
 
 if __name__ == "__main__":
     import sys
