@@ -15,10 +15,38 @@ class System:
         self.__secutiry = security;
         self.__adjSyss = [];
         self.__gatePos = {};
-        self.g = 0
-        self.h = 0
-        self.f = 0
-        self.parent = ""
+        self.g = []
+        self.h = []
+        self.f = []
+        self.parent = []
+    def getG(self, num):
+        return self.g[num]
+    def getH(self, num):
+        return self.h[num]
+    def getF(self, num):
+        return self.f[num]
+    def getParent(self, num):
+        return self.parent[num]
+    def setG(self, num, entry):
+        self.g[num] = entry
+    def setH(self, num, entry):
+        self.h[num] = entry
+    def setF(self, num, entry):
+        self.f[num] = entry
+    def setParent(self, num, entry):
+        self.parent[num] = entry
+    def setupAstar(self, arrayID):
+        if len(self.g) <= arrayID:
+            while len(self.g) <= arrayID:
+                self.g.append(0)
+                self.h.append(0)
+                self.f.append(0)
+                self.parent.append("")
+        else:
+            self.g[arrayID] = 0
+            self.h[arrayID] = 0
+            self.f[arrayID] = 0
+            self.parent[arrayID] = ""
     def addadjSys(self, adjSys):
         self.__adjSyss.append(adjSys);
     def addGatePos(self, gate, pos):
