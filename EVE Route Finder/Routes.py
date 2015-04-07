@@ -6,21 +6,19 @@ class RouteFinder:
         self.mainStart=origin #initialize the main start system 
         self.mainEnd=destination #initialize the main end system
         self.systems = systems #initialize the systems array
-        self.currentCalcs = 0
+        self.currentCalcs = 0 #Stores the current amount of running calculations
     def getSys(self, sysID): #Returns a system object given an id
         return self.systems[sysID]
     def get_h(self, node, routeType, start="", end=""): #Get the estimated cost of getting to the end system. Different calculations are used depending on what
         #is currently wanted
-        if(start == ""):
+        if(start == ""): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
             start = self.mainStart
         if(end == ""):
             end = self.mainEnd
         if(routeType == "dl"): #If we are using the default route
             return node.getSysDistance(end) #Then h is calculated by the system module
         if(routeType == "j"): #If we are using the jumps route
-            print(start.getName() + "\t" + end.getName())
             route = self.lyDistanceRoute(start, end)
-            print(type(route))
             return len(route)-1 #Get the amount of jumps from the default route calculation
     def getAdj(self, node): #Get the adjacent systems for a given system
         systems = node.getadjSyss()
@@ -35,45 +33,38 @@ class RouteFinder:
         if(routeType == "j"):
             return self.jumpsRoute()
         if(routeType == "dl"):
-            route =  self.lyDistanceRoute()
-            self.currentCalcs -= 1
-            #print(type(route))
-            #for sys in route:
-            #    print(sys.getName())
-            #    print(type(sys))
-            #    print(self.get_h(sys, "j", sys))
-            return route
+            return    self.lyDistanceRoute()
         if(routeType == "du"):
             return self.auDistanceRoute()
-    def buildRoute(self, node, arrayID): #Recursively Builds the route into an array of systems given a node/system
+    def buildRoute(self, node, arrayID, start): #Recursively Builds the route into an array of systems given a node/system
         route = []#initialize the route array
-        if node is self.mainStart: #If the current node is the start node
+        if node is start: #If the current node is the start node
             route.append(node) #Append it to the array
             return route #Return the array
         else: #Otherwise
-            route = self.buildRoute(node.getParent(arrayID), arrayID) #Call the method again on the parent node for the current node
+            route = self.buildRoute(node.getParent(arrayID), arrayID, start) #Call the method again on the parent node for the current node
             route.append(node) #After that returns append the current node
             return route #And return the route
     def lyDistanceRoute(self, start="", end=""):#Default ly distance route finder
-        if(start == ""):
+        if(start == ""): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
             start = self.mainStart
         if(end == ""):
             end = self.mainEnd
         arrayID = self.currentCalcs #Array id for A* value storage arrays in the systems
-        self.currentCalcs +=1
-        for sysID, sys in self.systems.items():
+        self.currentCalcs +=1 #Increases the number of current calculations being run
+        for sysID, sys in self.systems.items(): #Sets up each system to ensure they are clear for the given arrayID
             sys.setupAstar(arrayID)
-        opened = []
-        heapq.heapify(opened)
-        closed = set()
-        print(start.getName() + " " + end.getName())
+        opened = [] #Sets up the open list
+        heapq.heapify(opened) #Turns the open list into a priority queue
+        closed = set() #Sets up the closed set
         heapq.heappush(opened, (start.getF(arrayID), start)) #Add the start to the heapq
         while len(opened): #While there are open nodes
             f, node = heapq.heappop(opened) #Get the final estimated cost and the node at the front of the queue
             closed.add(node) #Add that node to the closed list
             if node is end: #If the node is the end node
-                print("Building route")
-                return self.buildRoute(node, arrayID) #Build the route and return it
+                route = self.buildRoute(node, arrayID, start) #Build the route and return it
+                self.currentCalcs -= 1 #Calc has finished so subtract one from the current calcs
+                return route
             adj_ids = self.getAdj(node) #Get the adjacent ids for the current node
             adj_systems = []#initialize the adjacent systems array
             for sys in adj_ids: #For each adjacent system id
