@@ -11,7 +11,7 @@ class Main:
      def load(self):
          os.chdir(os.path.dirname(sys.argv[0])); #Set the current directory to the correct one
          lines = []; #Set up the lines array
-         with open("SystemsAll.txt", 'r') as sysFile: #Open the systems file
+         with open("Systems.txt", 'r') as sysFile: #Open the systems file
               for line in sysFile: #For each line in the file
                    lines.append(line.strip('\n'));#Append the line to the array after stripping the new line char
          for i in range(0,len(lines)): #For each entry in the array
@@ -56,12 +56,18 @@ class Main:
           return route
      def runRandomTester(self):
           runs = 10
+          file = ""
+          file = open("AutoTestLog.txt", 'w')
           for i in range(0,10):
                start = self.systems[random.choice(list(self.systems.keys()))]
                end = self.systems[random.choice(list(self.systems.keys()))]
                while(start == end):
                    end = random.choice(list(self.systems.keys()))
                print(start.getName() + "\t" + end.getName())
+               routeFinder = RouteFinder(start, end, self.systems)
+               route = routeFinder.getRoute('dl')
+               file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\n")
+          file.close()
      def __init__(self):
           self.systems = {}; #Initilise the systems dict
           self.gui = ""; #Initilise the gui object
