@@ -38,29 +38,14 @@ class RouteFinder:
             return self.jumpsRoute()
         if(routeType == "dl"):
             route =  self.lyDistanceRoute()
-            self.reset()
-            print(type(route))
-            for sys in route:
-                print(sys.getName())
-                print(type(sys))
-                print(self.get_h(sys, "j", sys))
-                self.reset()
+            #print(type(route))
+            #for sys in route:
+            #    print(sys.getName())
+            #    print(type(sys))
+            #    print(self.get_h(sys, "j", sys))
             return route
         if(routeType == "du"):
             return self.auDistanceRoute()
-    def reset(self):
-        self.opened = []
-        heapq.heapify(self.opened)
-        self.closed = set()
-        print(type(self.systems))
-        count = 0
-        for name, sys in self.systems.items():
-            sys.g = 0
-            sys.h = 0
-            sys.f = 0
-            sys.parent = ""
-            count +=1
-        print(count)
     def buildRoute(self, node): #Recursively Builds the route into an array of systems given a node/system
         route = []#initialize the route array
         if node is self.mainStart: #If the current node is the start node
@@ -75,11 +60,14 @@ class RouteFinder:
             start = self.mainStart
         if(end == ""):
             end = self.mainEnd
+        opened = []
+        heapq.heapify(opened)
+        closed = set()
         print(start.getName() + " " + end.getName())
-        heapq.heappush(self.opened, (start.f, start)) #Add the start to the heapq
-        while len(self.opened): #While there are open nodes
-            f, node = heapq.heappop(self.opened) #Get the final estimated cost and the node at the front of the queue
-            self.closed.add(node) #Add that node to the closed list
+        heapq.heappush(opened, (start.f, start)) #Add the start to the heapq
+        while len(opened): #While there are open nodes
+            f, node = heapq.heappop(opened) #Get the final estimated cost and the node at the front of the queue
+            closed.add(node) #Add that node to the closed list
             if node is end: #If the node is the end node
                 print("Building route")
                 return self.buildRoute(node) #Build the route and return it
@@ -88,13 +76,13 @@ class RouteFinder:
             for sys in adj_ids: #For each adjacent system id
                 adj_systems.append(self.getSys(sys)) #Get the corosponding system object
             for adj in adj_systems: #For each adjacent system 
-                if adj not in self.closed: #If the node is not closed
-                    if (adj.f, adj) in self.opened: #If the node is open
+                if adj not in closed: #If the node is not closed
+                    if (adj.f, adj) in opened: #If the node is open
                         if adj.g > node.g + adj.getSysDistance(node): #If current path better than found path
                             self.updateNode(adj, node, "dl") #Update that node with the current node as parent
                     else: #Otherwise
                         self.updateNode(adj, node, "dl") #Update the node with the current node as parent
-                        heapq.heappush(self.opened, (adj.f, adj)) #Then push it onto the queue
+                        heapq.heappush(opened, (adj.f, adj)) #Then push it onto the queue
     def jumpsRoute(self):
         return
     def auDistanceRoute(self):

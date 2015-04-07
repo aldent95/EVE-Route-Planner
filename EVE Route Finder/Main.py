@@ -59,8 +59,6 @@ class Main:
           self.routeFinder = "" #Initilise the routefinder object
           self.load(); #Load the files
           self.setupUI(); #Setup the gui
-          self.findRoute("Amarr", "Jita")
-          print("Finding Route")
           
 
 if __name__ == "__main__":
