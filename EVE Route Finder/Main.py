@@ -11,12 +11,14 @@ class Main:
      def load(self):
          os.chdir(os.path.dirname(sys.argv[0])); #Set the current directory to the correct one
          lines = []; #Set up the lines array
-         with open("Systems.txt", 'r') as sysFile: #Open the systems file
+         with open("SystemsAll.txt", 'r') as sysFile: #Open the systems file
               for line in sysFile: #For each line in the file
                    lines.append(line.strip('\n'));#Append the line to the array after stripping the new line char
          for i in range(0,len(lines)): #For each entry in the array
               line = lines[i].split('\t'); #Split by tabs
               tempSys = System(line[0], line[1], line[2], line[3], line[4], line[5], line[6],line[7]) #Create a sys object
+              if(line[2] == "A821-A" or line[2] == "J7HZ-F" or line[2] == "UUA-F4" or line[3].startswith("31")):
+                   continue
               self.systems[line[3]] = tempSys; #Add the sys object to the systems dict, with the sys id as key
               self.nameList.append(line[0]); #Append the sys name to the name list
               self.sysNames[line[0]] = line[3]; #Add the sys name to the sysNames array, putting it in the entry corosponding to its id
