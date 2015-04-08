@@ -67,6 +67,8 @@ class Main:
                routeFinder = RouteFinder(start, end, self.systems)
                route = routeFinder.getRoute('dl')
                file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\n")
+               #route = routeFinder.getRoute('j')
+               #file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\n")
           file.close()
      def __init__(self):
           self.systems = {}; #Initilise the systems dict

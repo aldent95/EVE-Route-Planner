@@ -18,7 +18,7 @@ class RouteFinder:
         if(routeType == "dl"): #If we are using the default route
             return node.getSysDistance(end) #Then h is calculated by the system module
         if(routeType == "j"): #If we are using the jumps route
-            route = self.lyDistanceRoute(start, end)
+            route = self.routeCalc(start, end, "dl")
             return len(route)-1 #Get the amount of jumps from the default route calculation
     def getAdj(self, node): #Get the adjacent systems for a given system
         systems = node.getadjSyss()
@@ -27,7 +27,7 @@ class RouteFinder:
         adj.setG(arrayID,node.getG(arrayID)+adj.getSysDistance(node)) #Update the cost of getting to the current system from the start
         adj.setH(arrayID, self.get_h(adj, routeType)) #Update the estimate of getting to the end from the current system
         adj.setParent(arrayID, node) #Set the parent to be the node we came from
-        adj.setF(arrayID, adj.getH(arrayID) + adj.getH(arrayID)) #Set the estimated final cost for the system
+        adj.setF(arrayID, adj.getG(arrayID) + adj.getH(arrayID)) #Set the estimated final cost for the system
     def getRoute(self, routeType): #Main get route method. Calls different methods based on what route type we want
         #j for jumps, dl for default lightyear distance, du for au distance
         return self.routeCalc(routeType)
