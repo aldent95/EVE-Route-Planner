@@ -4,6 +4,7 @@ from System import System
 from GUI import UI
 from Routes import RouteFinder
 import random
+import time
     
 #finder;
 
@@ -55,21 +56,36 @@ class Main:
           route = self.routeFinder.getRoute('dl') #Get the route
           return route
      def runRandomTester(self):
-          runs = 10
+          runs = 100000
+          incons = 0
+          better = 0
           file = ""
           file = open("AutoTestLog.txt", 'w')
-          for i in range(0,10):
+          for i in range(0,runs):
                start = self.systems[random.choice(list(self.systems.keys()))]
                end = self.systems[random.choice(list(self.systems.keys()))]
                while(start == end):
                    end = random.choice(list(self.systems.keys()))
                print(start.getName() + "\t" + end.getName())
+               print(i)
                routeFinder = RouteFinder(start, end, self.systems)
+               jumps = [0,0]
+               ctime = int(round(time.time()*1000))
                route = routeFinder.getRoute('dl')
-               file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\n")
-               #route = routeFinder.getRoute('j')
-               #file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\n")
+               jumps[0] = len(route)-1
+               file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\t" + str(int(round(time.time()*1000))-ctime) + "\n")
+               dtime = int(round(time.time()*1000))
+               route = routeFinder.getRoute('brute')
+               jumps[1] = len(route)-1
+               file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\t" + str(int(round(time.time()*1000))-dtime) + "\n\n")
+               if(dtime < ctime):
+                    better += 1
+               if(jumps[0] != jumps[1]):
+                    file.write("INCONSISTENCY!!!!!!!!!!!!!!!\n\n\n\n")
+                    incons+=1
+          file.write("Runs: " + str(runs) + " Inconsistencys : " + str(incons) + " Breadth first better time: " + str(better) + "/" + str(runs))
           file.close()
+          print("Done")
      def __init__(self):
           self.systems = {}; #Initilise the systems dict
           self.gui = ""; #Initilise the gui object
@@ -78,7 +94,7 @@ class Main:
           self.routeFinder = "" #Initilise the routefinder object
           self.load(); #Load the files
           self.setupUI(); #Setup the gui
-          self.runRandomTester()
+          #self.runRandomTester()
 
 if __name__ == "__main__":
     import sys

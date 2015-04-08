@@ -18,7 +18,7 @@ class RouteFinder:
         if(routeType == "dl"): #If we are using the default route
             return node.getSysDistance(end) #Then h is calculated by the system module
         if(routeType == "j"): #If we are using the jumps route
-            route = self.routeCalc(start, end, "dl")
+            route = self.routeCalc("dl", start, end)
             return len(route)-1 #Get the amount of jumps from the default route calculation
     def getAdj(self, node): #Get the adjacent systems for a given system
         systems = node.getadjSyss()
@@ -30,7 +30,10 @@ class RouteFinder:
         adj.setF(arrayID, adj.getG(arrayID) + adj.getH(arrayID)) #Set the estimated final cost for the system
     def getRoute(self, routeType): #Main get route method. Calls different methods based on what route type we want
         #j for jumps, dl for default lightyear distance, du for au distance
-        return self.routeCalc(routeType)
+        if(routeType != "brute"):
+            return self.routeCalc(routeType)
+        else:
+            return self.brute()
     def buildRoute(self, node, arrayID, start): #Recursively Builds the route into an array of systems given a node/system
         route = []#initialize the route array
         if node is start: #If the current node is the start node
@@ -72,10 +75,33 @@ class RouteFinder:
                     else: #Otherwise
                         self.updateNode(adj, node, routeType, arrayID) #Update the node with the current node as parent
                         heapq.heappush(opened, (adj.getF(arrayID), adj)) #Then push it onto the queue
-    def jumpsRoute(self):
-        return
-    def auDistanceRoute(self):
-        return
+    def brute(self, start="", end=""):
+        if(start == ""): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
+            start = self.mainStart
+        if(end == ""):
+            end = self.mainEnd
+        arrayID = self.currentCalcs
+        self.currentCalcs +=1 #Increases the number of current calculations being run
+        for sysID, sys in self.systems.items(): #Sets up each system to ensure they are clear for the given arrayID
+            sys.setupAstar(arrayID)
+        visited, queue = set(), [start]
+        while queue:
+            sys = queue.pop(0)
+            if(sys == end):
+                route = self.buildRoute(sys, arrayID, start) #Build the route and return it
+                self.currentCalcs -= 1 #Calc has finished so subtract one from the current calcs
+                return route
+            if sys not in visited:
+                visited.add(sys)
+                adj_ids = self.getAdj(sys)
+                adj_systems = []
+                for adjid in adj_ids: #For each adjacent system id
+                    adjsys = self.getSys(adjid)
+                    if(adjsys not in visited and adjsys not in queue):
+                        adjsys.setParent(arrayID, sys)
+                        adj_systems.append(adjsys) #Get the corosponding system object
+                queue.extend(adj_systems)
+        return visited
     
         
     

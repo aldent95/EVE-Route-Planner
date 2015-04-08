@@ -68,9 +68,12 @@ class UI(Tk):
         #Handles creating and setting up all the buttons
         calculateButton= Button(self, text="Calculate", command=self.getRoute)
         calculateButton.grid(column=4,row=0,sticky='E'+'W')
-    def getRoute(self):
-        #systems = self.observer.findRoute(self.origin.get(),self.des.get())
-        systems = self.observer.findRoute(self.origin.get(),self.des.get())
+    def getRoute(self,debug=False):
+        systems = ""
+        if(debug):
+            systems = self.observer.findRoute("1DH-SX","Santola")
+        else:
+            systems = self.observer.findRoute(self.origin.get(),self.des.get())
         self.dotlanURL = buildDotlan(systems)
         jumps = len(systems)-1
         distance = 0
@@ -110,6 +113,7 @@ class UI(Tk):
        #Set up the observe so that we can tell it when we want a route
        self.observer = observer
        self.dotlanURL = "evemaps.dotlan.net"
+       self.getRoute(True)
        #self.mainloop();#Start the main loop
 
 def buildDotlan(systems):
