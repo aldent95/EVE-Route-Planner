@@ -57,6 +57,7 @@ class RouteFinder:
         closed = set() #Sets up the closed set
         heapq.heappush(opened, (start.getF(arrayID), start)) #Add the start to the heapq
         while len(opened): #While there are open nodes
+            #print(opened)
             f, node = heapq.heappop(opened) #Get the final estimated cost and the node at the front of the queue
             closed.add(node) #Add that node to the closed list
             if node is end: #If the node is the end node

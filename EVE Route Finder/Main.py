@@ -56,7 +56,7 @@ class Main:
           route = self.routeFinder.getRoute('dl') #Get the route
           return route
      def runRandomTester(self):
-          runs = 100000
+          runs = 10000
           incons = 0
           better = 0
           file = ""
@@ -65,20 +65,27 @@ class Main:
                start = self.systems[random.choice(list(self.systems.keys()))]
                end = self.systems[random.choice(list(self.systems.keys()))]
                while(start == end):
-                   end = random.choice(list(self.systems.keys()))
+                   end = self.systems[random.choice(list(self.systems.keys()))]
                print(start.getName() + "\t" + end.getName())
                print(i)
                routeFinder = RouteFinder(start, end, self.systems)
                jumps = [0,0]
-               ctime = int(round(time.time()*1000))
-               route = routeFinder.getRoute('dl')
-               jumps[0] = len(route)-1
-               file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\t" + str(int(round(time.time()*1000))-ctime) + "\n")
-               dtime = int(round(time.time()*1000))
-               route = routeFinder.getRoute('brute')
-               jumps[1] = len(route)-1
-               file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\t" + str(int(round(time.time()*1000))-dtime) + "\n\n")
-               if(dtime < ctime):
+               ctime, dtime = 0,0
+               try:
+                    ctime = int(round(time.time()*1000))
+                    route = routeFinder.getRoute('dl')
+                    jumps[0] = len(route)-1
+                    file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\t" + str(int(round(time.time()*1000))-ctime) + "\n")
+               except TypeError as e:
+                    file.write(start.getName() + "\t" + end.getName() + "\t" + "Caught type error running A*")
+               try:
+                    dtime = int(round(time.time()*1000))
+                    route = routeFinder.getRoute('brute')
+                    jumps[1] = len(route)-1
+                    file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\t" + str(int(round(time.time()*1000))-dtime) + "\n\n")
+               except TypeError as e:
+                    file.write(start.getName() + "\t" + end.getName() + "\t" + "Caught type error running breadth")
+               if(dtime < ctime or (ctime == 0 and dtime > 0)):
                     better += 1
                if(jumps[0] != jumps[1]):
                     file.write("INCONSISTENCY!!!!!!!!!!!!!!!\n\n\n\n")
@@ -94,7 +101,7 @@ class Main:
           self.routeFinder = "" #Initilise the routefinder object
           self.load(); #Load the files
           self.setupUI(); #Setup the gui
-          #self.runRandomTester()
+          self.runRandomTester()
 
 if __name__ == "__main__":
     import sys
