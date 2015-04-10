@@ -56,7 +56,7 @@ class Main:
           route = self.routeFinder.getRoute('dl') #Get the route
           return route
      def runRandomTester(self):
-          runs = 10000
+          runs = 100000
           incons = 0
           better = 0
           file = ""
@@ -66,7 +66,6 @@ class Main:
                end = self.systems[random.choice(list(self.systems.keys()))]
                while(start == end):
                    end = self.systems[random.choice(list(self.systems.keys()))]
-               print(start.getName() + "\t" + end.getName())
                print(i)
                routeFinder = RouteFinder(start, end, self.systems)
                jumps = [0,0]
@@ -74,15 +73,17 @@ class Main:
                try:
                     ctime = int(round(time.time()*1000))
                     route = routeFinder.getRoute('dl')
+                    ctime = int(round(time.time()*1000))-ctime
                     jumps[0] = len(route)-1
-                    file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\t" + str(int(round(time.time()*1000))-ctime) + "\n")
+                    file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\t" + str(ctime) + "\n")
                except TypeError as e:
                     file.write(start.getName() + "\t" + end.getName() + "\t" + "Caught type error running A*")
                try:
                     dtime = int(round(time.time()*1000))
                     route = routeFinder.getRoute('brute')
+                    dtime = int(round(time.time()*1000))-dtime
                     jumps[1] = len(route)-1
-                    file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\t" + str(int(round(time.time()*1000))-dtime) + "\n\n")
+                    file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\t" + str(dtime) + "\n\n")
                except TypeError as e:
                     file.write(start.getName() + "\t" + end.getName() + "\t" + "Caught type error running breadth")
                if(dtime < ctime or (ctime == 0 and dtime > 0)):
