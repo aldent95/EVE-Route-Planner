@@ -53,10 +53,10 @@ class Main:
           destSys = self.systems[self.sysNames[destination]] #Get the destination system
           self.routeFinder = RouteFinder(oriSys, destSys, self.systems) #Set up the route finder **TEMP**
           #setupRouteFinder()
-          route = self.routeFinder.getRoute('dl') #Get the route
+          route = self.routeFinder.getRoute('j') #Get the route
           return route
      def runRandomTester(self):
-          runs = 100000
+          runs = 10
           incons = 0
           better = 0
           file = ""
@@ -80,7 +80,7 @@ class Main:
                     file.write(start.getName() + "\t" + end.getName() + "\t" + "Caught type error running A*")
                try:
                     dtime = int(round(time.time()*1000))
-                    route = routeFinder.getRoute('brute')
+                    route = routeFinder.getRoute('j')
                     dtime = int(round(time.time()*1000))-dtime
                     jumps[1] = len(route)-1
                     file.write(start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\t" + str(dtime) + "\n\n")
@@ -102,7 +102,7 @@ class Main:
           self.routeFinder = "" #Initilise the routefinder object
           self.load(); #Load the files
           self.setupUI(); #Setup the gui
-          self.runRandomTester()
+          #self.runRandomTester()
 
 if __name__ == "__main__":
     import sys
