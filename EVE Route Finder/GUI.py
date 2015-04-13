@@ -82,6 +82,7 @@ class UI(Tk):
                continue
             else:
                distance = distance + systems[i].getGateDistance(systems[i-1].getID(),systems[i+1].getID());
+        distance = round(distance, 2)
         self.output.configure(state='normal')
         self.output.delete(1.0,'end');
         self.output.insert('end', "Route information\n Total Jumps: " + str(jumps) + " Total warp distance: " + str(distance))
