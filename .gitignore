@@ -1,2 +1,5 @@
 *.pyc
 EVE Route Finder/Test.py
+EVE Route Finder/Main.spec
+EVE Route Finder/build
+EVE Route Finder/dist

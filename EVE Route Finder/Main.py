@@ -10,7 +10,7 @@ import time
 
 class Main:
      def load(self):
-         os.chdir(os.path.dirname(sys.argv[0])); #Set the current directory to the correct one
+         os.chdir(os.path.dirname(sys.argv[0])+ "\data"); #Set the current directory to the correct one
          lines = []; #Set up the lines array
          with open("Systems.txt", 'r') as sysFile: #Open the systems file
               for line in sysFile: #For each line in the file
