@@ -20,10 +20,10 @@ class HelpMenu(Toplevel):
                 lines.append(line.strip('\n'))
         for i in range(0,len(lines)):
             self.rowconfigure(i, weight=1)
-            Label(self, padx=2, text=lines[i]).grid(row=i, column=0, sticky='E'+'W')
+            Label(self, padx=10, text=lines[i], wraplength=480).grid(row=i, column=0, sticky='E'+'W')
         helpFile.close()
-        w = 400  # Sets up the window position on the screen
-        h = 150
+        w = 500  # Sets up the window position on the screen
+        h = 200
         sw = self.winfo_screenwidth()
         sh = self.winfo_screenheight()
         x = (sw - w) / 2

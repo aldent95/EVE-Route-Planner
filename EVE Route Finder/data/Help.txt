@@ -1,2 +1,13 @@
-Test
-Test2
+Eve Route Finder Alpha version 0.1.1
+
+The current version of the route finder is very limited and only intended to be an alpha release to ensure that the current algorithm produces the same routes as EVE's autopilot running on shortest route with no avoidence.
+
+To use simply select and Origin and Destination and click Calculate.
+
+Settings menu is currently a WIP and not functional.
+
+Program produced by Alex Dent
+If any issues are found then one of the following can be done.
+- Open an issue on my Github repro for this project
+- Contact me on Github
+- Contact me in EVE on one of my 2 mains, Wedge Rancer or Wedge Minner
