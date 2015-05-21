@@ -11,3 +11,5 @@ If any issues are found then one of the following can be done.
 - Open an issue on my Github repro for this project
 - Contact me on Github
 - Contact me in EVE on one of my 2 mains, Wedge Rancer or Wedge Minner
+
+© 2014 CCP hf. All rights reserved. "EVE", "EVE Online", "CCP", and all related logos and images are trademarks or registered trademarks of CCP hf.
