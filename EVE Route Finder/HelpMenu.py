@@ -18,12 +18,14 @@ class HelpMenu(Toplevel):
         with open("Help.txt", 'r') as helpFile:
             for line in helpFile:
                 lines.append(line.strip('\n'))
+        self.rowconfigure(0, weight=1)
         for i in range(0,len(lines)):
-            self.rowconfigure(i, weight=1)
-            Label(self, padx=10, text=lines[i], wraplength=480).grid(row=i, column=0, sticky='E'+'W')
+            self.rowconfigure(i+1, weight=1)
+            Label(self, padx=10, pady=10, text=lines[i], wraplength=480).grid(row=i, column=0, sticky='E'+'W')
+        self.rowconfigure(len(lines)+1, weight=1)
         helpFile.close()
         w = 500  # Sets up the window position on the screen
-        h = 200
+        h = 200 + (10*len(lines))
         sw = self.winfo_screenwidth()
         sh = self.winfo_screenheight()
         x = (sw - w) / 2
