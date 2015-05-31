@@ -77,7 +77,7 @@ class UI(Tk):
         self.dotlanURL = buildDotlan(systems)
         jumps = len(systems)-1
         distance = 0
-        for i in range(0,len(systems)):
+        for i in xrange(0,len(systems)):
             if(i==0 or i==len(systems)-1):
                continue
             else:
@@ -91,7 +91,7 @@ class UI(Tk):
         self.output.insert('end', "\n")
         count = 0
         routeString = ""
-        for j in range(0,len(systems)):
+        for j in xrange(0,len(systems)):
             if(j != len(systems)-1):
                 routeString += systems[j].getName() + " --> "
             else:
@@ -120,7 +120,7 @@ class UI(Tk):
 def buildDotlan(systems):
     url = "evemaps.dotlan.net/route/"
     print(len(systems))
-    for i in range(0,len(systems)):
+    for i in xrange(0,len(systems)):
         if(i != len(systems)):
             name = systems[i].getName()
             name = name.replace(" ", "_")

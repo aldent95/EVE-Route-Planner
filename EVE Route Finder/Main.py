@@ -13,9 +13,8 @@ class Main:
          os.chdir(os.path.dirname(sys.argv[0])+ "\data"); #Set the current directory to the correct one
          lines = []; #Set up the lines array
          with open("Systems.txt", 'r') as sysFile: #Open the systems file
-              for line in sysFile: #For each line in the file
-                   lines.append(line.strip('\n'));#Append the line to the array after stripping the new line char
-         for i in range(0,len(lines)): #For each entry in the array
+              [lines.append(line.strip('\n')) for line in sysFile] #For each line in the file Append the line to the array after stripping the new line char
+         for i in xrange(0,len(lines)): #For each entry in the array
               line = lines[i].split('\t'); #Split by tabs
               tempSys = System(line[0], line[1], line[2], line[3], line[4], line[5], line[6],line[7]) #Create a sys object
               if(line[2] == "A821-A" or line[2] == "J7HZ-F" or line[2] == "UUA-F4" or line[3].startswith("31")):
@@ -27,9 +26,8 @@ class Main:
          self.nameList= sorted(self.nameList); #Sort the name list
          lines = []; #Clear the lines array
          with open("Stargates.txt", 'r') as gatesFile: #Open the gates file
-              for line in gatesFile: #For each line in gates file
-                   lines.append(line.strip('\n')) #Append to the lines array after stripping the new line char
-         for i in range(0,len(lines)): #For each entry in the array
+              [lines.append(line.strip('\n')) for line in gatesFile] #For each line in gates file append to the lines array after stripping the new line char
+         for i in xrange(0,len(lines)): #For each entry in the array
               line = lines[i].split('\t'); #Split by tabs
               tempSys = self.systems[line[4]]; #Retrive the origin system
               tempSys.addadjSys(line[5]); #Add the adjacent system
@@ -61,7 +59,7 @@ class Main:
           better = 0
           file = ""
           file = open("AutoTestLog.txt", 'w')
-          for i in range(0,runs):
+          for i in xrange(0,runs):
                start = self.systems[random.choice(list(self.systems.keys()))]
                end = self.systems[random.choice(list(self.systems.keys()))]
                while(start == end):

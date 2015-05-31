@@ -40,8 +40,7 @@ class AutoCompleteEntry(Entry):
                     self.listBox_Displayed = True;
 
                 self.listBox.delete(0,END);#Clear the entry box, even if it is already clear
-                for w in words:#For all the found words
-                    self.listBox.insert(END,w);#Add them to the list box
+                [self.listBox.insert(END,w) for w in words]#For all the found words Add them to the list box
             else:#If there are no words found
                 if self.listBox_Displayed:#And the listbox is displayed
                     self.listBox.destroy();#Destroy the listbox
