@@ -25,6 +25,8 @@ class TestMainMethods(unittest.TestCase):
         self.addGateGoodData = lines[10].split("\t")
         self.addGateMissingData = lines[11].split("\t")
         self.addGateCorruptData = lines[12].split("\t")
+        self.systemsRouteTestData =[lines[13].split("\t"), lines[14].split("\t"),lines[15].split("\t"), lines[16].split("\t"), lines[17].split("\t"), lines[18].split("\t"), lines[19].split("\t"), lines[20].split("\t"), lines[21].split("\t"), lines[22].split("\t")]
+        self.RouteTestsExpectedResults = [33,42,55
             
     def tearDown(self):
         self.main = ""
@@ -156,7 +158,7 @@ class TestMainMethods(unittest.TestCase):
             self.assertEqual(returnedValue, expectedValue, "Fail: Corrupt Data not handleded correctly")
 
     def test_PositivefindRoute(self):
-
+        
         
 
     def test_NegativefindRoute(self):

@@ -48,7 +48,7 @@ class Main:
      def loadSystems(self, specificPath="", specificFile="Systems.txt"):
           try:
                if(specificPath == ""):
-                    os.chdir(os.path.dirname(__file__)+ "\data"); #Set the current directory to the correct one
+                    os.chdir(os.path.dirname(__file__)+ "\data") #Set the current directory to the correct one
                else:
                     os.chdir(specificPath)
           except WindowsError:
@@ -183,7 +183,11 @@ class Main:
                self.loadSystems(); #Load the files
                self.loadGates()
                self.setupUI(); #Setup the gui
-          
+     def cleanUp(self):
+          self.systems =""
+          self.gui.stop()
+          self.nameList =""
+          self.sysNames = ""
      def __init__(self, mode=""):
           if(mode == "Random Tester"):
                self.setup(mode)
