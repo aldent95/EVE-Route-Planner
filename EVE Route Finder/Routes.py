@@ -81,8 +81,6 @@ class RouteFinder:
             end = self.mainEnd
         arrayID = self.currentCalcs
         self.currentCalcs +=1 #Increases the number of current calculations being run
-        for sysID, sys in self.systems.items(): #Sets up each system to ensure they are clear for the given arrayID
-            sys.setupAstar(arrayID)
         visited, queue = set(), [start]
         while queue:
             sys = queue.pop(0)

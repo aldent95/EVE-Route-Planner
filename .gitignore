@@ -3,3 +3,5 @@ EVE Route Finder/Test.py
 EVE Route Finder/Main.spec
 EVE Route Finder/build
 EVE Route Finder/dist
+EVE Route Finder/data/AutoTestLog.txt
+EVE Route Finder/tests/AutoTestLog.txt

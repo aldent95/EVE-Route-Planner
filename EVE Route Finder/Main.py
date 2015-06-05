@@ -3,44 +3,57 @@ import os
 from System import System
 from GUI import UI
 from Routes import RouteFinder
-import random
-import time
+
 
 
 
 class Main:
      def handleError(self, errorCode):
           print("Handle error received error code: " + str(errorCode) + " Handle error does not currently do anything")
+          #Error codes
+          #0: Missing directory on load
+          #1: Missing file on load
+          #2: Missing data on load
+          #3: Corrupt data on load
      def addSys(self, line):
-          tempSys = System(line[0], line[1], line[2], line[3], line[4], line[5], line[6],line[7]) #Create a sys object
-
-          self.systems[line[3]] = tempSys; #Add the sys object to the systems dict, with the sys id as key
-
-          self.nameList.append(line[0]); #Append the sys name to the name list
-
-          self.sysNames[line[0]] = line[3]; #Add the sys name to the sysNames array, putting it in the entry corosponding to its id
-
-          return tempSys
+          try:
+               tempSys = System() #Create a sys object
+               tempSys = tempSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6],line[7])
+               if isinstance(tempSys, System):                  
+                    self.systems[line[3]] = tempSys; #Add the sys object to the systems dict, with the sys id as key
+                    self.nameList.append(line[0]); #Append the sys name to the name list
+                    self.sysNames[line[0]] = line[3]; #Add the sys name to the sysNames array, putting it in the entry corosponding to its id               
+                    return tempSys
+               else:
+                    self.handleError(tempSys[0])
+                    return tempSys[1]
+          except IndexError:
+               self.handleError(2)
+               return "Error, System file missing data, error passed to GUI"
      
      def trimSystems(self, lines):
           sysToLoad = []
           for i in xrange(0,len(lines)):
                line = lines[i].split('\t')
-               if line[2] == "A821-A" or line[2] == "J7HZ-F" or line[2] == "UUA-F4" or line[3].startswith("31"):
-                    continue
-               else :
-                    sysToLoad.append(line)
+               try:
+                    if line[2] == "A821-A" or line[2] == "J7HZ-F" or line[2] == "UUA-F4" or line[3].startswith("31"):
+                         continue
+                    else :
+                         sysToLoad.append(line)
+               except IndexError:
+                    self.handleError(2)
+                    return "Error, System file missing data, error passed to GUI"
           return sysToLoad
      
      def loadSystems(self, specificPath="", specificFile="Systems.txt"):
-          if(specificPath == ""):
-               os.chdir(os.path.dirname(__file__)+ "\data"); #Set the current directory to the correct one
-          else:
-               try:
+          try:
+               if(specificPath == ""):
+                    os.chdir(os.path.dirname(__file__)+ "\data"); #Set the current directory to the correct one
+               else:
                     os.chdir(specificPath)
-               except WindowsError:
-                    self.handleError(0)
-                    return "Error, missing path, error passed to GUI"
+          except WindowsError:
+               self.handleError(0)
+               return "Error, missing path, error passed to GUI"
           lines = []; #Set up the lines array
           try:
                with open(specificFile, 'r') as sysFile: #Open the systems file
@@ -60,18 +73,40 @@ class Main:
           return sysLoaded
 
      def addGate(self, line):
+          try:
+               tempSys = self.systems[line[4]]; #Retrive the origin system
+               tempSys.addadjSys(self.systems[line[5]]); #Add the adjacent system
+               pos = [line[1], line[2], line[3]]; #Add the gate pos to an object
+               tempSys.addGatePos(line[5], pos); #Add the gate pos to the system
+          except IndexError:
+               self.handleError(2)
+               return "Error, Gate file missing data, error passed to GUI"
+          except KeyError:
+               self.handleError(3)
+               return "Error, Gate file data corrupt, error passed to GUI"
 
-          tempSys = self.systems[line[4]]; #Retrive the origin system
-          tempSys.addadjSys(line[5]); #Add the adjacent system
-          pos = [line[1], line[2], line[3]]; #Add the gate pos to an object
-          tempSys.addGatePos(line[5], pos); #Add the gate pos to the system
-
-     def loadGates(self):
+     def loadGates(self, specificPath="", specificFile="Stargates.txt"):
+          if(specificPath == ""):
+               try:
+                    os.chdir(os.path.dirname(__file__)+ "\data"); #Set the current directory to the correct one
+               except WindowsError:
+                    self.handleError(0)
+                    return "Error, missing path, error passed to GUI"
+          else:
+               try:
+                    os.chdir(specificPath)
+               except WindowsError:
+                    self.handleError(0)
+                    return "Error, missing path, error passed to GUI"
           lines = []
-          with open("Stargates.txt", 'r') as gatesFile: #Open the gates file
-              [lines.append(line.strip('\n')) for line in gatesFile] #For each line in gates file append to the lines array after stripping the new line char
-          gatesLoaded = len(lines)
-          [self.addGate(lines[i].split('\t')) for i in xrange(0,gatesLoaded) ]
+          try:
+               with open(specificFile, 'r') as gatesFile: #Open the gates file
+                   [lines.append(line.strip('\n')) for line in gatesFile] #For each line in gates file append to the lines array after stripping the new line char
+               gatesLoaded = len(lines)
+               [self.addGate(lines[i].split('\t')) for i in xrange(0,gatesLoaded) ]
+          except IOError:
+               self.handleError(1)
+               return "Error, missing file, error passed to GUI"
 
           return gatesLoaded
 
@@ -138,7 +173,7 @@ class Main:
           file.close()
           print("Done")
           
-     def setup(self,mode):
+     def setup(self, mode):
           self.systems = {}; #Initilise the systems dict
           self.gui = ""; #Initilise the gui object
           self.nameList = [];#Initilise the name list
@@ -149,9 +184,9 @@ class Main:
                self.loadGates()
                self.setupUI(); #Setup the gui
           
-     def __init__(self, mode):
+     def __init__(self, mode=""):
           if(mode == "Random Tester"):
-               self.setup()
+               self.setup(mode)
                self.runRandomTester()
           else:
                self.setup(mode)
