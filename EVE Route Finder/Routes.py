@@ -75,14 +75,13 @@ class RouteFinder:
 ##                        self.updateNode(adj, node, routeType, arrayID) #Update the node with the current node as parent
 ##                        heapq.heappush(opened, (adj.getF(arrayID), adj)) #Then push it onto the queue
     def jumpsRoute(self, start="", end=""):
+
         if(start == ""): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
             start = self.mainStart
         if(end == ""):
             end = self.mainEnd
         arrayID = self.currentCalcs
         self.currentCalcs +=1 #Increases the number of current calculations being run
-        for sysID, sys in self.systems.items(): #Sets up each system to ensure they are clear for the given arrayID
-            sys.setupAstar(arrayID)
         visited, queue = set(), [start]
         while queue:
             sys = queue.pop(0)
@@ -92,15 +91,12 @@ class RouteFinder:
                 return route
             if sys not in visited:
                 visited.add(sys)
-                adj_ids = self.getAdj(sys)
-                adj_systems = []
-                for adjid in adj_ids: #For each adjacent system id
-                    adjsys = self.getSys(adjid)
+                adj_systems = self.getAdj(sys)
+                for adjsys in adj_systems: #For each adjacent system id
                     if(adjsys not in visited and adjsys not in queue):
                         adjsys.setParent(arrayID, sys)
-                        adj_systems.append(adjsys) #Get the corosponding system object
                 queue.extend(adj_systems)
-        return visited
+        raise SystemError('Ran out of adjacent systems? This shouldn\'t happen')
     
         
     
