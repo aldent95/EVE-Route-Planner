@@ -16,16 +16,23 @@ class System:
             self.__secutiry = security;
             self.__adjSyss = [];
             self.__gatePos = {};
+            self.parent = []
             return(self)
         except ValueError:
             return [3, "Error, System file data corrupt, error passed to GUI"]
     def addadjSys(self, adjSys):
-        self.__adjSyss.append(adjSys);
+        self.__adjSyss.append(adjSys)
+    def setParent(self, num, entry):
+        while len(self.parent) <= num:
+            self.parent.append("")
+        self.parent[num] = entry
+    def getParent(self, num):
+        return self.parent[num]
     def addGatePos(self, gate, pos):
-        pos[0] = convert(pos[0],2);
-        pos[1] = convert(pos[1],2);
-        pos[2] = convert(pos[2],2);
-        self.__gatePos[gate] = pos;
+        pos[0] = convert(pos[0],2)
+        pos[1] = convert(pos[1],2)
+        pos[2] = convert(pos[2],2)
+        self.__gatePos[gate] = pos
     def getadjSys(self, adjSysid):
         for adjSys in self.__adjSyss:
             if adjSys.getID() == adjSysid:
@@ -64,7 +71,11 @@ class System:
         return distance;
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
-  
+    def __hash__(self):
+        return hash(self.__sysID)
+
+
+
 def convert(num,conType):
     if(conType == 1):
         num = num.split('e+');

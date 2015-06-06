@@ -26,7 +26,6 @@ class TestMainMethods(unittest.TestCase):
         self.addGateMissingData = lines[11].split("\t")
         self.addGateCorruptData = lines[12].split("\t")
         self.systemsRouteTestData =[lines[13].split("\t"), lines[14].split("\t"),lines[15].split("\t"), lines[16].split("\t"), lines[17].split("\t"), lines[18].split("\t"), lines[19].split("\t"), lines[20].split("\t"), lines[21].split("\t"), lines[22].split("\t")]
-        self.RouteTestsExpectedResults = [33,42,55
             
     def tearDown(self):
         self.main = ""
@@ -158,11 +157,25 @@ class TestMainMethods(unittest.TestCase):
             self.assertEqual(returnedValue, expectedValue, "Fail: Corrupt Data not handleded correctly")
 
     def test_PositivefindRoute(self):
-        
+        self.main.loadSystems()
+        self.main.loadGates()
+        for i in xrange(0,9):
+            data = self.systemsRouteTestData[i]
+            returnedValue = len(self.main.findRoute(data[0], data[1]))-1
+            self.assertEqual(int(data[2]), returnedValue, "Fail: Returned route length differs from expected " + data[0] + " " + data[2] + " " + str(returnedValue))
         
 
     def test_NegativefindRoute(self):
-
+        returnedValue = self.main.findRoute("Fails", "Fails2")
+        expectedValue = "Error, incorrect/non-existant system, error passed to GUI"
+        self.assertEqual(returnedValue, expectedValue, "Fail: Non-existant system not handeled correctly")
+        self.main.loadSystems()
+        returnedValue = self.main.findRoute("Jita", "Fails2")
+        expectedValue = "Error, incorrect/non-existant system, error passed to GUI"
+        self.assertEqual(returnedValue, expectedValue, "Fail: Non-existant system not handeled correctly")
+        returnedValue = self.main.findRoute("Jita", "Amarr")
+        expectedValue = "Error, unknown route finder error, error passed to GUI"
+        self.assertEqual(returnedValue, expectedValue, "Fail: Unknown Route finder error not handeled correctly")
         
 
 def convert(num,conType):
