@@ -1,28 +1,32 @@
 #!/usr/bin/python
-
+from GeneralError import GeneralError
 import math  
 class System:
     
     def build(self, name, constellation, region, sysID, x, y, z, security):
-        try:
-            self.__sysID = sysID;
-            self.__name = name;
-            self.__constellation = constellation;
-            self.__region = region;
-            x = convert(x,1);
-            y = convert(y,1);
-            z = convert(z,1);
-            self.__pos = [x,y,z];
-            self.__secutiry = security;
-            self.__adjSyss = [];
-            self.__gatePos = {};
-            self.parent = []
-            return(self)
-        except ValueError:
-            return [3, "Error, System file data corrupt, error passed to GUI"]
+        self.__sysID = sysID;
+        self.__name = name;
+        self.__constellation = constellation;
+        self.__region = region;
+        x = convert(x,1);
+        y = convert(y,1);
+        z = convert(z,1);
+        self.__pos = [x,y,z];
+        self.__security = security;
+        self.__adjSyss = [];
+        self.__gatePos = {};
+        self.parent = []
+        return(self)
     def addadjSys(self, adjSys):
-        self.__adjSyss.append(adjSys)
+        if isinstance(adjSys, System):
+            self.__adjSyss.append(adjSys)
+        else:
+            raise TypeError("Trying to add something that is not a system to adjacent systems")
     def setParent(self, num, entry):
+        if not isinstance(num, int):
+            raise TypeError("Did not pass type int as num argument")
+        if not isinstance(entry, System):
+            raise TypeError("Did not pass type system as the parent")
         while len(self.parent) <= num:
             self.parent.append("")
         self.parent[num] = entry
@@ -34,12 +38,19 @@ class System:
         pos[2] = convert(pos[2],2)
         self.__gatePos[gate] = pos
     def getadjSys(self, adjSysid):
+        foundSys = ""
+        if len(self.__adjSyss) == 0:
+            raise IndexError("System does not have any adjacent systems")
         for adjSys in self.__adjSyss:
             if adjSys.getID() == adjSysid:
-                return adjSys;
-        return;
+                foundSys = adjSys;
+        if  not isinstance(foundSys, System):
+            raise ValueError("No adjacent system found with given id")
+        return foundSys
     def getGatePos(self, adjSysId):
-        return self.__gatePos[adjSysId];
+        return self.__gatePos[adjSysId]
+    def getSecurity(self):
+        return self.__security
     def getadjSyss(self):
         return self.__adjSyss;
     def getID(self):
@@ -53,21 +64,25 @@ class System:
     def getPOS(self):
         return self.__pos
     def getGateDistance(self, gate1, gate2):
+        if gate1 == gate2:
+            raise GeneralError(5, "Gate 1 and 2 are the same")
         pos1 = self.__gatePos[gate1];
         pos2 = self.__gatePos[gate2];
         x = pow((float(pos2[0])-float(pos1[0])),2);
         y = pow((float(pos2[1])-float(pos1[1])),2);
         z = pow((float(pos2[2])-float(pos1[2])),2);
-        distance = (sqrt(x+y+z))/1000;
+        distance = (math.sqrt(x+y+z))/1000;
         distance = round(distance/149597871,1);
         return distance;
     def getSysDistance(self, other):
+        if not isinstance(other, System):
+            raise TypeError("Cannot get distance when not passed a second system object")
         pos1 = self.getPOS();
         pos2 = other.getPOS();
         x = pow((float(pos2[0])-float(pos1[0])),2);
         y = pow((float(pos2[1])-float(pos1[1])),2);
         z = pow((float(pos2[2])-float(pos1[2])),2);
-        distance = (sqrt(x+y+z))/1000;
+        distance = (math.sqrt(x+y+z))/1000;
         return distance;
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
