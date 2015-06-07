@@ -23,6 +23,10 @@ class System:
         else:
             raise TypeError("Trying to add something that is not a system to adjacent systems")
     def setParent(self, num, entry):
+        if not isinstance(num, int):
+            raise TypeError("Did not pass type int as num argument")
+        if not isinstance(entry, System):
+            raise TypeError("Did not pass type system as the parent")
         while len(self.parent) <= num:
             self.parent.append("")
         self.parent[num] = entry
@@ -74,7 +78,7 @@ class System:
         x = pow((float(pos2[0])-float(pos1[0])),2);
         y = pow((float(pos2[1])-float(pos1[1])),2);
         z = pow((float(pos2[2])-float(pos1[2])),2);
-        distance = (sqrt(x+y+z))/1000;
+        distance = (math.sqrt(x+y+z))/1000;
         return distance;
     def __eq__(self, other):
         return self.__dict__ == other.__dict__

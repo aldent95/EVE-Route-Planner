@@ -23,6 +23,8 @@ class TestSystemMethods(unittest.TestCase):
         self.correctGateData = [lines[23].split("\t"), lines[24].split("\t"), lines[25].split("\t")]
         self.corruptMissingGateData = lines[26].split("\t")
         self.corruptWrongGateData = lines[27].split("\t")
+        self.secondSys = lines[28].split("\t")
+        self.distances = lines[29].split("\t")
                   
     def tearDown(self):
         self.main = ""
@@ -49,6 +51,8 @@ class TestSystemMethods(unittest.TestCase):
         line = self.corruptWrongDataSysLine
         with self.assertRaises(ValueError):
             testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
+        with self.assertRaises(ValueError):
+            testSys.build(line[0], line[1], line[2], line[3], "Ten", line[5], line[6], line[7])
     
     def test_PositiveaddAdjSysandgetAdjSys(self):
         self.main.loadSystems()
@@ -71,8 +75,65 @@ class TestSystemMethods(unittest.TestCase):
             testSys.getadjSys("80059")
         with self.assertRaises(TypeError):
             testSys.addadjSys("Fails")
-
-
+    def test_PositivesetgetParent(self):
+        self.main.loadSystems()
+        line = self.correctSysLine
+        testSys = System()
+        testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
+        parent = self.main.systems[self.correctGateData[0][5]]
+        testSys.setParent(0, parent)
+        self.assertEqual(testSys.getParent(0), parent, "Fail: Parent stored incorrectly or at incorrect num")
+        parent = self.main.systems[self.correctGateData[1][5]]
+        testSys.setParent(10, parent)
+        self.assertEqual(testSys.getParent(10), parent, "Fail: Parent stored incorrectly or at incorrect num")
+    def test_NegativesetgetParent(self):
+        self.main.loadSystems()
+        line = self.correctSysLine
+        testSys = System()
+        testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
+        parent = self.main.systems[self.correctGateData[0][5]]
+        with self.assertRaises(TypeError):
+            testSys.setParent("Fail", parent)
+        with self.assertRaises(TypeError):
+            testSys.setParent(1, "Fail")
+        with self.assertRaises(IndexError):
+            testSys.getParent(9)
+    def test_PositiveaddgetGatePos(self):
+        self.main.loadSystems()
+        line = self.correctSysLine
+        testSys = System()
+        testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
+        line = self.correctGateData[0]
+        testSys.addGatePos(line[5], [line[1], line[2], line[3]])
+        pos = testSys.getGatePos(line[5])
+        self.assertEqual(convert(line[1], 2), pos[0], "Fail: PosX not added correctly")
+        self.assertEqual(convert(line[2], 2), pos[1], "Fail: PosY not added correctly")
+        self.assertEqual(convert(line[3], 2), pos[2], "Fail: PosZ not added correctly")
+    def test_NegativeaddgetGatePos(self):
+        line = self.correctSysLine
+        testSys = System()
+        testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
+        line = self.corruptMissingGateData
+        with self.assertRaises(IndexError):
+            testSys.addGatePos(line[4], [line[1], line[2]])
+        line = self.corruptWrongGateData
+        with self.assertRaises(ValueError):
+            testSys.addGatePos(line[5], [line[1], line[2], line[3]])
+        with self.assertRaises(KeyError):
+            testSys.getGatePos("fail")
+    def test_PositivegetSysDistance(self):
+        line = self.correctSysLine
+        testSys = System()
+        testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
+        line = self.secondSys
+        secondSys = System().build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
+        self.assertEqual(convert(self.distances[0], 1)/1000, int(testSys.getSysDistance(secondSys)), "Fail: System distances are not getting calculated correctly")
+    def test_NegativegetSysDistance(self):
+        return
+        
+##        self.correctGateData = [lines[23].split("\t"), lines[24].split("\t"), lines[25].split("\t")]
+##        self.corruptMissingGateData = lines[26].split("\t")
+##        self.corruptWrongGateData = lines[27].split("\t")
 def convert(num,conType):
     if(conType == 1):
         num = num.split('e+');
@@ -84,9 +145,4 @@ def convert(num,conType):
         num = num[0]*pow(10,num[1]);
     else:
         num = num[0];
-    return num;
-
-
-
-
-
+    return num
