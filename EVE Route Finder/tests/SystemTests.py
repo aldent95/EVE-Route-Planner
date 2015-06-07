@@ -4,6 +4,7 @@ lib_path = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), '..'))
 sys.path.append(lib_path)
 from Main import Main
 from System import System
+from GeneralError import GeneralError
 import math
 
 class TestSystemMethods(unittest.TestCase):
@@ -129,11 +130,35 @@ class TestSystemMethods(unittest.TestCase):
         secondSys = System().build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
         self.assertEqual(convert(self.distances[0], 1)/1000, int(testSys.getSysDistance(secondSys)), "Fail: System distances are not getting calculated correctly")
     def test_NegativegetSysDistance(self):
-        return
-        
-##        self.correctGateData = [lines[23].split("\t"), lines[24].split("\t"), lines[25].split("\t")]
-##        self.corruptMissingGateData = lines[26].split("\t")
-##        self.corruptWrongGateData = lines[27].split("\t")
+        line = self.correctSysLine
+        testSys = System()
+        testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
+        secondSys = ""
+        with self.assertRaises(TypeError):
+            testSys.getSysDistance(secondSys)
+    def test_PositiveGetGateDistance(self):
+        line = self.correctSysLine
+        testSys = System()
+        testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
+        line = self.correctGateData
+        testSys.addGatePos(line[0][5], [line[0][1], line[0][2], line[0][3]])
+        testSys.addGatePos(line[1][5], [line[1][1], line[1][2], line[1][3]])
+        expectedResult = round((convert(self.distances[1], 1)/1000)/149597871, 1)
+        actualResult = int(testSys.getGateDistance(line[0][5], line[1][5]))
+        self.assertEqual(expectedResult, actualResult, "Fail: Gate distances not calculated correctly")
+    def test_NegativeGetGateDistance(self):
+        line = self.correctSysLine
+        testSys = System()
+        testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
+        line = self.correctGateData
+        testSys.addGatePos(line[0][5], [line[0][1], line[0][2], line[0][3]])
+        testSys.addGatePos(line[1][5], [line[1][1], line[1][2], line[1][3]])
+        with self.assertRaises(KeyError):
+            testSys.getGateDistance(line[0][5], "Test")
+        with self.assertRaises(KeyError):
+            testSys.getGateDistance("Test", line[1][5])
+        with self.assertRaises(GeneralError):
+            testSys.getGateDistance(line[1][5], line[1][5])
 def convert(num,conType):
     if(conType == 1):
         num = num.split('e+');

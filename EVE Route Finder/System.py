@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+from GeneralError import GeneralError
 import math  
 class System:
     
@@ -64,15 +64,19 @@ class System:
     def getPOS(self):
         return self.__pos
     def getGateDistance(self, gate1, gate2):
+        if gate1 == gate2:
+            raise GeneralError(5, "Gate 1 and 2 are the same")
         pos1 = self.__gatePos[gate1];
         pos2 = self.__gatePos[gate2];
         x = pow((float(pos2[0])-float(pos1[0])),2);
         y = pow((float(pos2[1])-float(pos1[1])),2);
         z = pow((float(pos2[2])-float(pos1[2])),2);
-        distance = (sqrt(x+y+z))/1000;
+        distance = (math.sqrt(x+y+z))/1000;
         distance = round(distance/149597871,1);
         return distance;
     def getSysDistance(self, other):
+        if not isinstance(other, System):
+            raise TypeError("Cannot get distance when not passed a second system object")
         pos1 = self.getPOS();
         pos2 = other.getPOS();
         x = pow((float(pos2[0])-float(pos1[0])),2);
