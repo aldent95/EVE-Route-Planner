@@ -16,20 +16,21 @@ class Main:
           #2: Missing data on load
           #3: Corrupt data on load
      def addSys(self, line):
-          try:
+
                tempSys = System() #Create a sys object
-               tempSys = tempSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6],line[7])
-               if isinstance(tempSys, System):                  
-                    self.systems[line[3]] = tempSys; #Add the sys object to the systems dict, with the sys id as key
-                    self.nameList.append(line[0]); #Append the sys name to the name list
-                    self.sysNames[line[0]] = line[3]; #Add the sys name to the sysNames array, putting it in the entry corosponding to its id               
-                    return tempSys
-               else:
-                    self.handleError(tempSys[0])
-                    return tempSys[1]
-          except IndexError:
-               self.handleError(2)
-               return "Error, System file missing data, error passed to GUI"
+               try:
+                    tempSys = tempSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6],line[7])
+               except IndexError:
+                    self.handleError(2)
+                    return "Error, System file missing data, error passed to GUI"
+               except ValueError:
+                    self.handleError(3)
+                    return "Error, System file data corrupt, error passed to GUI"
+               self.systems[line[3]] = tempSys; #Add the sys object to the systems dict, with the sys id as key
+               self.nameList.append(line[0]); #Append the sys name to the name list
+               self.sysNames[line[0]] = line[3]; #Add the sys name to the sysNames array, putting it in the entry corosponding to its id               
+               return tempSys
+          
      
      def trimSystems(self, lines):
           sysToLoad = []

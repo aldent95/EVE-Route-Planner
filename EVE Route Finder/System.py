@@ -4,24 +4,24 @@ import math
 class System:
     
     def build(self, name, constellation, region, sysID, x, y, z, security):
-        try:
-            self.__sysID = sysID;
-            self.__name = name;
-            self.__constellation = constellation;
-            self.__region = region;
-            x = convert(x,1);
-            y = convert(y,1);
-            z = convert(z,1);
-            self.__pos = [x,y,z];
-            self.__secutiry = security;
-            self.__adjSyss = [];
-            self.__gatePos = {};
-            self.parent = []
-            return(self)
-        except ValueError:
-            return [3, "Error, System file data corrupt, error passed to GUI"]
+        self.__sysID = sysID;
+        self.__name = name;
+        self.__constellation = constellation;
+        self.__region = region;
+        x = convert(x,1);
+        y = convert(y,1);
+        z = convert(z,1);
+        self.__pos = [x,y,z];
+        self.__security = security;
+        self.__adjSyss = [];
+        self.__gatePos = {};
+        self.parent = []
+        return(self)
     def addadjSys(self, adjSys):
-        self.__adjSyss.append(adjSys)
+        if isinstance(adjSys, System):
+            self.__adjSyss.append(adjSys)
+        else:
+            raise TypeError("Trying to add something that is not a system to adjacent systems")
     def setParent(self, num, entry):
         while len(self.parent) <= num:
             self.parent.append("")
@@ -34,12 +34,19 @@ class System:
         pos[2] = convert(pos[2],2)
         self.__gatePos[gate] = pos
     def getadjSys(self, adjSysid):
+        foundSys = ""
+        if len(self.__adjSyss) == 0:
+            raise IndexError("System does not have any adjacent systems")
         for adjSys in self.__adjSyss:
             if adjSys.getID() == adjSysid:
-                return adjSys;
-        return;
+                foundSys = adjSys;
+        if  not isinstance(foundSys, System):
+            raise ValueError("No adjacent system found with given id")
+        return foundSys
     def getGatePos(self, adjSysId):
-        return self.__gatePos[adjSysId];
+        return self.__gatePos[adjSysId]
+    def getSecurity(self):
+        return self.__security
     def getadjSyss(self):
         return self.__adjSyss;
     def getID(self):

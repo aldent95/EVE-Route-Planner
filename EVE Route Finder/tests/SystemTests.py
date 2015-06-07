@@ -1,0 +1,92 @@
+import unittest
+import os,sys
+lib_path = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), '..'))
+sys.path.append(lib_path)
+from Main import Main
+from System import System
+import math
+
+class TestSystemMethods(unittest.TestCase):
+    def setUp(self):
+        self.main = Main("Unit Tests")
+        lines = []        
+        path = os.path.dirname(__file__)
+        os.chdir(path)
+        fileName= "TestData.txt"
+        with open(fileName, 'r') as testFile:
+            for line in testFile:
+                lines.append(line.strip("\n"))
+        testFile.close()
+        self.correctSysLine = lines[0].split("\t")
+        self.corruptMissingDataSysLine = lines[1].split("\t")
+        self.corruptWrongDataSysLine = lines[2].split("\t")
+        self.correctGateData = [lines[23].split("\t"), lines[24].split("\t"), lines[25].split("\t")]
+        self.corruptMissingGateData = lines[26].split("\t")
+        self.corruptWrongGateData = lines[27].split("\t")
+                  
+    def tearDown(self):
+        self.main = ""
+        
+    def test_PositiveBuildSys(self):
+        line = self.correctSysLine
+        testSys = System()
+        testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
+        self.assertTrue(isinstance(testSys, System), "Fail: test system is not an instance of system")
+        self.assertEqual(line[0], testSys.getName(), "Fail: test system name not correct")
+        self.assertEqual(line[1], testSys.getConstellation(), "Fail: test system constellation not correct")
+        self.assertEqual(line[2], testSys.getRegion(), "Fail: test system region not correct")
+        self.assertEqual(line[3], testSys.getID(), "Fail: test system ID not correct")
+        self.assertEqual(convert(line[4], 1), testSys.getPOS()[0], "Fail: test system PosX not correct")
+        self.assertEqual(convert(line[5], 1), testSys.getPOS()[1], "Fail: test system PosY not correct")
+        self.assertEqual(convert(line[6], 1), testSys.getPOS()[2], "Fail: test system PosZ not correct")
+        self.assertEqual(line[7], testSys.getSecurity(), "Fail: test system Security not correct")
+
+    def test_NegativeBuildSys(self):
+        line = self.corruptMissingDataSysLine
+        testSys = System()
+        with self.assertRaises(TypeError):
+            testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
+        line = self.corruptWrongDataSysLine
+        with self.assertRaises(ValueError):
+            testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
+    
+    def test_PositiveaddAdjSysandgetAdjSys(self):
+        self.main.loadSystems()
+        line = self.correctSysLine
+        testSys = System()
+        testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
+        testID = self.correctGateData[0][5]
+        testSys.addadjSys(self.main.systems[testID])
+        self.assertEqual(self.main.systems[testID],testSys.getadjSys(testID),"Fail: adjacent system not added correctly")
+
+    def test_NegativeaddAdjSysandgetAdjSys(self):
+        self.main.loadSystems()
+        line = self.correctSysLine
+        testSys = System()
+        testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
+        with self.assertRaises(IndexError):
+            testSys.getadjSys(self.correctGateData[0][5])
+        testSys.addadjSys(self.main.systems[self.correctGateData[0][5]])
+        with self.assertRaises(ValueError):
+            testSys.getadjSys("80059")
+        with self.assertRaises(TypeError):
+            testSys.addadjSys("Fails")
+
+
+def convert(num,conType):
+    if(conType == 1):
+        num = num.split('e+');
+    else:
+        num = num.split('E');
+    num[0] = float(num[0]);
+    if len(num) >1:
+        num[1] = float(num[1]);
+        num = num[0]*pow(10,num[1]);
+    else:
+        num = num[0];
+    return num;
+
+
+
+
+
