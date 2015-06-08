@@ -1,8 +1,16 @@
 #!/usr/bin/python
 import heapq
+from System import System
+from GeneralError import GeneralError
 
 class RouteFinder:
     def __init__(self, origin, destination, systems): #Setup the route finder
+        if not isinstance(origin, System) or not isinstance(destination, System):
+            raise TypeError("Origin or Destinitation are not system instances")
+        if not isinstance(systems, dict):
+            raise TypeError("Provided systems list is not actually a list")
+        if len(systems) == 0:
+            raise IndexError("Provided systems list is empty")
         self.mainStart=origin #initialize the main start system 
         self.mainEnd=destination #initialize the main end system
         self.systems = systems #initialize the systems array
@@ -21,17 +29,21 @@ class RouteFinder:
 ##            route = self.routeCalc("dl", start, end)
 ##            return len(route)-1 #Get the amount of jumps from the default route calculation
     def getAdj(self, node): #Get the adjacent systems for a given system
+        if not isinstance(node, System):
+            raise TypeError("Node is not a system")
         systems = node.getadjSyss()
         return systems
-    def updateNode(self, adj, node, routeType, arrayID): #Update a system
-        adj.setG(arrayID,node.getG(arrayID)+adj.getSysDistance(node)) #Update the cost of getting to the current system from the start
-        adj.setH(arrayID, self.get_h(adj, routeType)) #Update the estimate of getting to the end from the current system
-        adj.setParent(arrayID, node) #Set the parent to be the node we came from
-        adj.setF(arrayID, adj.getG(arrayID) + adj.getH(arrayID)) #Set the estimated final cost for the system
+##    def updateNode(self, adj, node, routeType, arrayID): #Update a system
+##        adj.setG(arrayID,node.getG(arrayID)+adj.getSysDistance(node)) #Update the cost of getting to the current system from the start
+##        adj.setH(arrayID, self.get_h(adj, routeType)) #Update the estimate of getting to the end from the current system
+##        adj.setParent(arrayID, node) #Set the parent to be the node we came from
+##        adj.setF(arrayID, adj.getG(arrayID) + adj.getH(arrayID)) #Set the estimated final cost for the system
     def getRoute(self, routeType): #Main get route method. Calls different methods based on what route type we want
         #j for jumps, dl for default lightyear distance, du for au distance
         if( routeType == "j"):
             return self.jumpsRoute()
+        else:
+            raise GeneralError(6, "Correct/Useable route type not supplied")
     def buildRoute(self, node, arrayID, start): #Recursively Builds the route into an array of systems given a node/system
         route = []#initialize the route array
         if node is start: #If the current node is the start node
