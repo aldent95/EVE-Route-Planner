@@ -5,6 +5,7 @@ sys.path.append(lib_path)
 from Main import Main
 from Routes import RouteFinder
 from GeneralError import GeneralError
+from System import System
 import math
 
 class TestRouteMethods(unittest.TestCase):
@@ -22,6 +23,7 @@ class TestRouteMethods(unittest.TestCase):
             for line in testFile:
                 lines.append(line.strip("\n"))
         testFile.close()
+        self.testSysLine = lines[0].split("\t")
         self.testRoutes = []
         for i in xrange(0, len(lines)):
             if 13 <= i <= 22:
@@ -76,6 +78,26 @@ class TestRouteMethods(unittest.TestCase):
         self.testRoute = RouteFinder(self.testRoutes[0][0], self.testRoutes[0][1], self.systems)
         with self.assertRaises(GeneralError):
             self.testRoute.getRoute("Fails")
+
+    def test_Negative_build_Route(self):
+        self.testRoute = RouteFinder(self.testRoutes[0][0], self.testRoutes[0][1], self.systems)
+        with self.assertRaises(TypeError):
+            self.testRoute.buildRoute("TEST",0,self.testRoutes[0][0])
+        with self.assertRaises(TypeError):
+            self.testRoute.buildRoute(self.testRoutes[0][1], 0, "TEST")
+        with self.assertRaises(TypeError):
+            self.testRoute.buildRoute(self.testRoutes[0][1], "Fail", self.testRoutes[0][0])
+
+    def test_Negative_jumps_Route(self):
+        self.testRoute = RouteFinder(self.testRoutes[0][0], self.testRoutes[0][1], self.systems)
+        self.testSys = System()
+        line = self.testSysLine
+        self.testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6],line[7])
+        with self.assertRaises(GeneralError):
+            self.testRoute.jumpsRoute(self.testSys)
+        with self.assertRaises(GeneralError):
+            self.testRoute.jumpsRoute(end=self.testSys)
+    
     
     
     

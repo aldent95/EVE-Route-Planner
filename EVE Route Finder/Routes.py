@@ -45,6 +45,8 @@ class RouteFinder:
         else:
             raise GeneralError(6, "Correct/Useable route type not supplied")
     def buildRoute(self, node, arrayID, start): #Recursively Builds the route into an array of systems given a node/system
+        if( (not isinstance(node, System)) or (not isinstance(start, System)) or (not isinstance(arrayID, int))):
+            raise TypeError("Arguments provided are not of correct type")
         route = []#initialize the route array
         if node is start: #If the current node is the start node
             route.append(node) #Append it to the array
@@ -86,11 +88,11 @@ class RouteFinder:
 ##                    else: #Otherwise
 ##                        self.updateNode(adj, node, routeType, arrayID) #Update the node with the current node as parent
 ##                        heapq.heappush(opened, (adj.getF(arrayID), adj)) #Then push it onto the queue
-    def jumpsRoute(self, start="", end=""):
+    def jumpsRoute(self, start=None, end=None):
 
-        if(start == ""): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
+        if(type(start) == type(None)): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
             start = self.mainStart
-        if(end == ""):
+        if(type(end) == type(None)):
             end = self.mainEnd
         arrayID = self.currentCalcs
         self.currentCalcs +=1 #Increases the number of current calculations being run
@@ -108,7 +110,7 @@ class RouteFinder:
                     if(adjsys not in visited and adjsys not in queue):
                         adjsys.setParent(arrayID, sys)
                 queue.extend(adj_systems)
-        raise SystemError('Ran out of adjacent systems? This shouldn\'t happen')
+        raise GeneralError(7,'Ran out of adjacent systems? This shouldn\'t happen')
     
         
     
