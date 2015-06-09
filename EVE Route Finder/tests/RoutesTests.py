@@ -32,11 +32,15 @@ class TestRouteMethods(unittest.TestCase):
             self.testRoutes[i][0] = self.systems[self.sysNames[self.testRoutes[i][0]]]
             self.testRoutes[i][1] = self.systems[self.sysNames[self.testRoutes[i][1]]]
     def test_PositiveInitiliseRoute(self):
-        self.testRoute = RouteFinder(self.systems[self.sysNames["Amarr"]], self.systems[self.sysNames["Jita"]], self.systems)
+        avoidence = [self.testRoutes[0][0]]
+        self.testRoute = RouteFinder(self.systems[self.sysNames["Amarr"]], self.systems[self.sysNames["Jita"]], self.systems,avoidence)
         self.assertEqual(self.testRoute.mainStart, self.systems[self.sysNames["Amarr"]], "Fail: Start system not loaded/stored correctly")
         self.assertEqual(self.testRoute.mainEnd, self.systems[self.sysNames["Jita"]], "Fail: End system not loaded/stored correctly")
         self.assertEqual(self.testRoute.systems, self.systems, "Fail: Systems not loaded/stored correctly")
         self.assertEqual(self.testRoute.currentCalcs, 0, "Fail: Current Calcs not setup correctly")
+        self.assertEqual(self.testRoute.avoidence, avoidence, "Fail: Avoidence list not loaded/stored correctly")
+        self.testRoute = RouteFinder(self.systems[self.sysNames["Amarr"]], self.systems[self.sysNames["Jita"]], self.systems)
+        self.assertEqual(self.testRoute.avoidence, [], "Fail: Avoidence not loaded correctly when none passed")
     def test_NegativeInitiliseRoute(self):
         line= self.testRoutes
         fails4= {}
@@ -48,6 +52,10 @@ class TestRouteMethods(unittest.TestCase):
             self.testRoute = RouteFinder(self.systems[self.sysNames["Amarr"]], self.systems[self.sysNames["Jita"]], "Fails3")
         with self.assertRaises(IndexError):
             self.testRoute = RouteFinder(self.systems[self.sysNames["Amarr"]], self.systems[self.sysNames["Jita"]], fails4)
+        with self.assertRaises(TypeError):
+            self.testRoute = RouteFinder(self.systems[self.sysNames["Amarr"]], self.systems[self.sysNames["Jita"]], self.systems, "Fails")
+        with self.assertRaises(GeneralError):
+            self.testRoute = RouteFinder(self.systems[self.sysNames["Amarr"]], self.systems[self.sysNames["Jita"]], self.systems, ["Fails"])
     def test_Positive_get_Sys(self):
         self.testRoute = RouteFinder(self.systems[self.sysNames["Amarr"]], self.systems[self.sysNames["Jita"]], self.systems)
         expectedResult = self.systems[self.sysNames["Tanoo"]]
@@ -98,6 +106,11 @@ class TestRouteMethods(unittest.TestCase):
         with self.assertRaises(GeneralError):
             self.testRoute.jumpsRoute(end=self.testSys)
     
-    
-    
-    
+##    def test_Positive_get_Route_Jumps_Avoidence(self):
+##        self.testRoute = RouteFinder(self.testRoutes[0][0], self.testRoutes[0][1], self.systems, [self.testRoutes[0][0])
+##        expectedResult = int(self.testRoutes[0][2])
+##        actualResult = len(self.testRoute.getRoute('j'))-1
+##        self.assertEqual(expectedResult, actualResult, "Fail: Route length not correct, must be a fault somewhere in route generation")
+##        actualResult = len(self.testRoute.getRoute('jtest'))-1
+##        self.assertEqual(expectedResult, actualResult, "Fail
+                    

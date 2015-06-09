@@ -4,7 +4,12 @@ from System import System
 from GeneralError import GeneralError
 
 class RouteFinder:
-    def __init__(self, origin, destination, systems): #Setup the route finder
+    def __init__(self, origin, destination, systems, avoidence = []): #Setup the route finder
+        if not isinstance(avoidence, list):
+            raise TypeError("Avoidence list is not a list")
+        for i in xrange(0, len(avoidence)):
+            if not isinstance(avoidence[i], System):
+                raise GeneralError(8,"Given avoidence list is not full of systems")
         if not isinstance(origin, System) or not isinstance(destination, System):
             raise TypeError("Origin or Destinitation are not system instances")
         if not isinstance(systems, dict):
@@ -14,6 +19,7 @@ class RouteFinder:
         self.mainStart=origin #initialize the main start system 
         self.mainEnd=destination #initialize the main end system
         self.systems = systems #initialize the systems array
+        self.avoidence = avoidence
         self.currentCalcs = 0 #Stores the current amount of running calculations
     def getSys(self, sysID): #Returns a system object given an id
         return self.systems[sysID]
@@ -42,6 +48,8 @@ class RouteFinder:
         #j for jumps, dl for default lightyear distance, du for au distance
         if( routeType == "j"):
             return self.jumpsRoute()
+        if(routeType == "jtest"):
+            return self.jumpsRoute2()
         else:
             raise GeneralError(6, "Correct/Useable route type not supplied")
     def buildRoute(self, node, arrayID, start): #Recursively Builds the route into an array of systems given a node/system
@@ -99,6 +107,31 @@ class RouteFinder:
         visited, queue = set(), [start]
         while queue:
             sys = queue.pop(0)
+            if(sys == end):
+                route = self.buildRoute(sys, arrayID, start) #Build the route and return it
+                self.currentCalcs -= 1 #Calc has finished so subtract one from the current calcs
+                return route
+            if sys not in visited:
+                visited.add(sys)
+                adj_systems = self.getAdj(sys)
+                for adjsys in adj_systems: #For each adjacent system id
+                    if(adjsys not in visited and adjsys not in queue):
+                        adjsys.setParent(arrayID, sys)
+                [queue.append(adjSys) for adjSys in adj_systems if adjSys == end or adjSys not in self.avoidence] 
+        raise GeneralError(7,'Ran out of adjacent systems? This shouldn\'t happen')
+    def jumpsRoute2(self, start=None, end=None):
+
+        if(type(start) == type(None)): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
+            start = self.mainStart
+        if(type(end) == type(None)):
+            end = self.mainEnd
+        arrayID = self.currentCalcs
+        self.currentCalcs +=1 #Increases the number of current calculations being run
+        visited, queue = set(), [start]
+        while queue:
+            sys = queue.pop(0)
+            if(sys in self.avoidence and sys != start and sys != end):
+                continue
             if(sys == end):
                 route = self.buildRoute(sys, arrayID, start) #Build the route and return it
                 self.currentCalcs -= 1 #Calc has finished so subtract one from the current calcs
