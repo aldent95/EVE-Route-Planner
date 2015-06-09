@@ -13,7 +13,7 @@ from GeneralError import GeneralError
 
 
 def runRandomTester(main):
-        runs = 10
+        runs = 20000
         incons = 0
         type2Better, type1Better = 0,0
         os.chdir(os.path.dirname(__file__))
@@ -55,27 +55,31 @@ def runRandomTester(main):
         print("Done")
 
 def test1(routeFinder, file, ctime,start, end):
+        route = ""
         try:
                 dtime = int(round(time.time()*1000))
                 route = routeFinder.getRoute('j')
                 dtime = int(round(time.time()*1000))-dtime
                 file.write("Avoidence Type 1: " + start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\t" + str(dtime) + "\n")
-                return [route, dtime]
         except GeneralError as e:
                 file.write(start.getName() + "\t" + end.getName() + "\t" + "Caught General Error / out of systems running Avoidence Type 1\n")
         except Exception as e:
                 file.write(start.getName() + "\t" + end.getName() + "\t" + "Caught unknown error running Avoidence type 1\t" + str(e) + "\n")
+        finally:
+                return [route, dtime]
 def test2(routeFinder, file, dtime,start,end):
+             route = ""
              try:
                   ctime = int(round(time.time()*1000))
                   route = routeFinder.getRoute('jtest')
                   ctime = int(round(time.time()*1000))-ctime
                   file.write("Avoidence Type 2: " +start.getName() + "\t" + end.getName() + "\t" + str(len(route)-1) + "\t" + str(ctime) + "\n")
-                  return [route,ctime]
              except GeneralError as e:
                   file.write(start.getName() + "\t" + end.getName() + "\t" + "Caught General Error / out of systems running Avoidence Type 2\n")
              except Exception as e:
                   file.write(start.getName() + "\t" + end.getName() + "\t" + "Caught unknown error running Avoidence type 2\t" + str(e) + "\n")
+             finally:
+                     return[route, ctime]
         
 
 if __name__ == "__main__":
