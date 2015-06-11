@@ -116,15 +116,20 @@ class Main:
          self.gui = UI(None, self.nameList, self); #Set up the GUI, pass it the names list and the main object
          return
      
-     def setupRouteFinder(self):
-         #Get route type setting from UI
+     def setupRouteFinder(self, origin, destiniation):
+          settings = []
+          try:
+               settings = self.ui.getSettings()#Get route type setting from UI
+          except AttributeError:
+               settings = [[self.systems[self.sysNames["Perimeter"]]]]
           #Get ship settings
           #Get Security filter setting
-          #Get avoidance list
+          avoidence = settings[0]#Get avoidance list
           #Get specific security status filtering
           #Get Sov setting
           #Generate route finder based on settings
-          self.routeFinder = RouteFinder() #Setup the route finder
+          routeFinder = RouteFinder(origin, destiniation, self.systems, avoidence) #Setup the route finder
+          return routeFinder
           
      def findRoute(self, origin, destination):
           try:
@@ -133,11 +138,10 @@ class Main:
           except KeyError:
                self.handleError(4)
                return "Error, incorrect/non-existant system, error passed to GUI"
-          self.routeFinder = RouteFinder(oriSys, destSys, self.systems) #Set up the route finder **TEMP**
-          #setupRouteFinder()
+          routeFinder = self.setupRouteFinder(oriSys, destSys) #Set up the route finder
           try:
-               route = self.routeFinder.getRoute('j') #Get the route
-          except Exception:
+               route = routeFinder.getRoute('j') #Get the route
+          except Exception as e:
                self.handleError(999)
                return "Error, unknown route finder error, error passed to GUI"
           return route
@@ -152,11 +156,13 @@ class Main:
                self.loadSystems(); #Load the files
                self.loadGates()
                self.setupUI(); #Setup the gui
-     def cleanUp(self):
+     def cleanUp(self, end=True):
           self.systems =""
           self.gui.stop()
           self.nameList =""
           self.sysNames = ""
+          if end:
+               sys.exit()
      def __init__(self, mode=""):
           if(mode == "Random Tester"):
                self.setup(mode)

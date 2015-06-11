@@ -176,7 +176,6 @@ class TestMainMethods(unittest.TestCase):
         returnedValue = self.main.findRoute("Jita", "Amarr")
         expectedValue = "Error, unknown route finder error, error passed to GUI"
         self.assertEqual(returnedValue, expectedValue, "Fail: Unknown Route finder error not handeled correctly")
-        
 
 def convert(num,conType):
     if(conType == 1):

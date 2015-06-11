@@ -58,17 +58,24 @@ class UI(threading.Thread):
     def configureMenu(self):
         #Handles configuring and setting up the menus
         menu = Menu(self.root);#Setup the menu bar
-        menu.add_command(label="Settings",command=self.displaySettings);
-        menu.add_command(label="Help",command=self.displayHelp);
+        menu.add_command(label="Settings",command=self.displaySettings)
+        menu.add_command(label="Help",command=self.displayHelp)
+        menu.add_command(label="Avoidence", command=self.displayAvoidence)
         self.root.config(menu=menu);
     def displaySettings(self):
         self.settingsMenu.deiconify();
     def displayHelp(self):
         self.helpMenu.deiconify();
+    def displayAvoidence(self):
+        self.avoidenceMenu.diconify()
     def setupButtons(self):
         #Handles creating and setting up all the buttons
         calculateButton= Button(self.root, text="Calculate", command=self.getRoute)
         calculateButton.grid(column=4,row=0,sticky='E'+'W')
+    def getSettings(self):
+        avoidence = []
+        avoidence = self.avoidenceMenu.getList()
+        return [avoidence]
     def getRoute(self,debug=False):
         systems = ""
         if(debug):
@@ -112,6 +119,7 @@ class UI(threading.Thread):
         self.initialize(self.namesList);#Initilize the GUI
         self.helpMenu = HelpMenu(self.root);
         self.settingsMenu = SettingsMenu(self.root);
+        self.avoidenceMenu = AvoidenceMenu(self.root)
         #Set up the observe so that we can tell it when we want a route
         self.dotlanURL = "evemaps.dotlan.net"
         #self.getRoute(True)

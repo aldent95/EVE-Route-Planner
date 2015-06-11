@@ -23,17 +23,6 @@ class RouteFinder:
         self.currentCalcs = 0 #Stores the current amount of running calculations
     def getSys(self, sysID): #Returns a system object given an id
         return self.systems[sysID]
-##    def get_h(self, node, routeType, start="", end=""): #Get the estimated cost of getting to the end system. Different calculations are used depending on what
-##        #is currently wanted
-##        if(start == ""): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
-##            start = self.mainStart
-##        if(end == ""):
-##            end = self.mainEnd
-##        if(routeType == "dl"): #If we are using the default route
-##            return node.getSysDistance(end) #Then h is calculated by the system module
-##        if(routeType == "j"): #If we are using the jumps route
-##            route = self.routeCalc("dl", start, end)
-##            return len(route)-1 #Get the amount of jumps from the default route calculation
     def getAdj(self, node): #Get the adjacent systems for a given system
         if not isinstance(node, System):
             raise TypeError("Node is not a system")
@@ -48,8 +37,6 @@ class RouteFinder:
         #j for jumps, dl for default lightyear distance, du for au distance
         if( routeType == "j"):
             return self.jumpsRoute()
-        if(routeType == "jtest"):
-            return self.jumpsRoute2()
         else:
             raise GeneralError(6, "Correct/Useable route type not supplied")
     def buildRoute(self, node, arrayID, start): #Recursively Builds the route into an array of systems given a node/system
@@ -63,6 +50,44 @@ class RouteFinder:
             route = self.buildRoute(node.getParent(arrayID), arrayID, start) #Call the method again on the parent node for the current node
             route.append(node) #After that returns append the current node
             return route #And return the route
+
+    def jumpsRoute(self, start=None, end=None):
+        if(type(start) == type(None)): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
+            start = self.mainStart
+        if(type(end) == type(None)):
+            end = self.mainEnd
+        arrayID = self.currentCalcs
+        self.currentCalcs +=1 #Increases the number of current calculations being run
+        visited, queue = set(), [start]
+        while queue:
+            sys = queue.pop(0)
+            if(sys in self.avoidence and sys != start and sys != end):
+                continue
+            if(sys == end):
+                route = self.buildRoute(sys, arrayID, start) #Build the route and return it
+                self.currentCalcs -= 1 #Calc has finished so subtract one from the current calcs
+                return route
+            if sys not in visited:
+                visited.add(sys)
+                adj_systems = self.getAdj(sys)
+                for adjsys in adj_systems: #For each adjacent system id
+                    if(adjsys not in visited and adjsys not in queue):
+                        adjsys.setParent(arrayID, sys)
+                queue.extend(adj_systems)
+        raise GeneralError(7,'Ran out of adjacent systems? This shouldn\'t happen')
+    
+##    def get_h(self, node, routeType, start="", end=""): #Get the estimated cost of getting to the end system. Different calculations are used depending on what
+##        #is currently wanted
+##        if(start == ""): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
+##            start = self.mainStart
+##        if(end == ""):
+##            end = self.mainEnd
+##        if(routeType == "dl"): #If we are using the default route
+##            return node.getSysDistance(end) #Then h is calculated by the system module
+##        if(routeType == "j"): #If we are using the jumps route
+##            route = self.routeCalc("dl", start, end)
+##            return len(route)-1 #Get the amount of jumps from the default route calculation
+        
 ##    def routeCalc(self, routeType, start="", end="", ):#Default ly distance route finder
 ##        if(start == ""): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
 ##            start = self.mainStart
@@ -96,54 +121,3 @@ class RouteFinder:
 ##                    else: #Otherwise
 ##                        self.updateNode(adj, node, routeType, arrayID) #Update the node with the current node as parent
 ##                        heapq.heappush(opened, (adj.getF(arrayID), adj)) #Then push it onto the queue
-    def jumpsRoute(self, start=None, end=None):
-
-        if(type(start) == type(None)): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
-            start = self.mainStart
-        if(type(end) == type(None)):
-            end = self.mainEnd
-        arrayID = self.currentCalcs
-        self.currentCalcs +=1 #Increases the number of current calculations being run
-        visited, queue = set(), [start]
-        while queue:
-            sys = queue.pop(0)
-            if(sys == end):
-                route = self.buildRoute(sys, arrayID, start) #Build the route and return it
-                self.currentCalcs -= 1 #Calc has finished so subtract one from the current calcs
-                return route
-            if sys not in visited:
-                visited.add(sys)
-                adj_systems = self.getAdj(sys)
-                for adjsys in adj_systems: #For each adjacent system id
-                    if(adjsys not in visited and adjsys not in queue):
-                        adjsys.setParent(arrayID, sys)
-                [queue.append(adjSys) for adjSys in adj_systems if adjSys == end or adjSys not in self.avoidence] 
-        raise GeneralError(7,'Ran out of adjacent systems? This shouldn\'t happen')
-    def jumpsRoute2(self, start=None, end=None):
-
-        if(type(start) == type(None)): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
-            start = self.mainStart
-        if(type(end) == type(None)):
-            end = self.mainEnd
-        arrayID = self.currentCalcs
-        self.currentCalcs +=1 #Increases the number of current calculations being run
-        visited, queue = set(), [start]
-        while queue:
-            sys = queue.pop(0)
-            if(sys in self.avoidence and sys != start and sys != end):
-                continue
-            if(sys == end):
-                route = self.buildRoute(sys, arrayID, start) #Build the route and return it
-                self.currentCalcs -= 1 #Calc has finished so subtract one from the current calcs
-                return route
-            if sys not in visited:
-                visited.add(sys)
-                adj_systems = self.getAdj(sys)
-                for adjsys in adj_systems: #For each adjacent system id
-                    if(adjsys not in visited and adjsys not in queue):
-                        adjsys.setParent(arrayID, sys)
-                queue.extend(adj_systems)
-        raise GeneralError(7,'Ran out of adjacent systems? This shouldn\'t happen')
-    
-        
-    
