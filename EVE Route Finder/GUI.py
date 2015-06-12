@@ -8,6 +8,7 @@ except ImportError:
 from AutoCompleteEntry import AutoCompleteEntry
 from HelpMenu import HelpMenu
 from SettingsMenu import SettingsMenu
+from AvoidenceMenu import AvoidenceMenu
 import webbrowser
 import threading
 
@@ -67,7 +68,7 @@ class UI(threading.Thread):
     def displayHelp(self):
         self.helpMenu.deiconify();
     def displayAvoidence(self):
-        self.avoidenceMenu.diconify()
+        self.avoidenceMenu.deiconify()
     def setupButtons(self):
         #Handles creating and setting up all the buttons
         calculateButton= Button(self.root, text="Calculate", command=self.getRoute)
@@ -119,7 +120,7 @@ class UI(threading.Thread):
         self.initialize(self.namesList);#Initilize the GUI
         self.helpMenu = HelpMenu(self.root);
         self.settingsMenu = SettingsMenu(self.root);
-        self.avoidenceMenu = AvoidenceMenu(self.root)
+        self.avoidenceMenu = AvoidenceMenu(self.root, self.namesList)
         #Set up the observe so that we can tell it when we want a route
         self.dotlanURL = "evemaps.dotlan.net"
         #self.getRoute(True)

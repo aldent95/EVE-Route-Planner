@@ -1,4 +1,4 @@
-#!/usr/bin/python
+
 #Allows compatibility with any version of Python by checking for both versions of Tkinter
 try:
     from Tkinter import *
