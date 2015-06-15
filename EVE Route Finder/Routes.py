@@ -4,7 +4,7 @@ from System import System
 from GeneralError import GeneralError
 
 class RouteFinder:
-    def __init__(self, origin, destination, systems, avoidence = []): #Setup the route finder
+    def __init__(self, origin, destination, systems, avoidence = [],algorithmType='j'): #Setup the route finder
         if not isinstance(avoidence, list):
             raise TypeError("Avoidence list is not a list")
         for i in xrange(0, len(avoidence)):
@@ -20,6 +20,7 @@ class RouteFinder:
         self.mainEnd=destination #initialize the main end system
         self.systems = systems #initialize the systems array
         self.avoidence = avoidence
+        self.algorithmType = algorithmType
         self.currentCalcs = 0 #Stores the current amount of running calculations
     def getSys(self, sysID): #Returns a system object given an id
         return self.systems[sysID]
@@ -35,10 +36,10 @@ class RouteFinder:
 ##        adj.setF(arrayID, adj.getG(arrayID) + adj.getH(arrayID)) #Set the estimated final cost for the system
     def getRoute(self, routeType): #Main get route method. Calls different methods based on what route type we want
         #j for jumps, dl for default lightyear distance, du for au distance
-        if( routeType == "j"):
-            return self.jumpsRoute()
-        else:
+        if routeType != 'normal' and routeType != 'safe' and routeType != 'lessSafe':
             raise GeneralError(6, "Correct/Useable route type not supplied")
+        if( self.algorithmType == "j"):
+            return self.jumpsRoute(routeType)          
     def buildRoute(self, node, arrayID, start): #Recursively Builds the route into an array of systems given a node/system
         if( (not isinstance(node, System)) or (not isinstance(start, System)) or (not isinstance(arrayID, int))):
             raise TypeError("Arguments provided are not of correct type")
@@ -51,7 +52,7 @@ class RouteFinder:
             route.append(node) #After that returns append the current node
             return route #And return the route
 
-    def jumpsRoute(self, start=None, end=None):
+    def jumpsRoute(self, routeType, start=None, end=None):
         if(type(start) == type(None)): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
             start = self.mainStart
         if(type(end) == type(None)):
@@ -59,8 +60,17 @@ class RouteFinder:
         arrayID = self.currentCalcs
         self.currentCalcs +=1 #Increases the number of current calculations being run
         visited, queue = set(), [start]
+        stuck = 0
         while queue:
             sys = queue.pop(0)
+            if routeType == 'safe' and sys.getSecurity <= 0.4 and stuck != len(queue):
+                stuck +=1
+                queue.extend([sys])
+                continue
+            if routeType == 'lessSafe' and sys.getSecurity >= 0.5 and stuck !=len(queue):
+                stuck +=1
+                queue.extend([sys])
+            stuck = 0
             if(sys in self.avoidence and sys != start and sys != end):
                 continue
             if(sys == end):

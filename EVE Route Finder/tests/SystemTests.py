@@ -42,7 +42,7 @@ class TestSystemMethods(unittest.TestCase):
         self.assertEqual(convert(line[4], 1), testSys.getPOS()[0], "Fail: test system PosX not correct")
         self.assertEqual(convert(line[5], 1), testSys.getPOS()[1], "Fail: test system PosY not correct")
         self.assertEqual(convert(line[6], 1), testSys.getPOS()[2], "Fail: test system PosZ not correct")
-        self.assertEqual(line[7], testSys.getSecurity(), "Fail: test system Security not correct")
+        self.assertEqual(round(float(line[7]),1), testSys.getSecurity(), "Fail: test system Security not correct")
 
     def test_NegativeBuildSys(self):
         line = self.corruptMissingDataSysLine

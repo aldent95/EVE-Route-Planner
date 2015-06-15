@@ -161,7 +161,7 @@ class TestMainMethods(unittest.TestCase):
         self.main.loadGates()
         for i in xrange(0,9):
             data = self.systemsRouteTestData[i]
-            returnedValue = len(self.main.findRoute(data[0], data[1]))-1
+            returnedValue = len(self.main.findRoute(data[0], data[1], 'normal'))-1
             self.assertEqual(int(data[2]), returnedValue, "Fail: Returned route length differs from expected " + data[0] + " " + data[2] + " " + str(returnedValue))
         
 

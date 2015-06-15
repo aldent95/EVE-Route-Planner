@@ -8,23 +8,48 @@ from Routes import RouteFinder
 
 
 class Main:
-     def handleError(self, errorCode):
-          print("Handle error received error code: " + str(errorCode) + " Handle error does not currently do anything")
+     def handleError(self, errorCode, msg=""):
+          if isinstance(self.gui, UI):
+               if errorCode==0:
+                    if msg=="System":
+                         self.gui.showError(errorCode,"Missing directory when trying to load systems file.\nPlease ensure that the data folder exists in the same folder as the exe.\nIf the error continues to happen try reinstall or contact the developer")
+                    elif msg=="Gates":
+                         self.gui.showError(errorCode,"Missing directory when trying to load gates file.\nPlease ensure that the data folder exists in the same folder as the exe.\nIf the error continues to happen try reinstall or contact the developer")
+               elif errorCode==1:
+                    if msg=="System":
+                         self.gui.showError(errorCode,"Missing file when trying to load systems file.\nPlease ensure that the Systems.txt file exists in the data folder.\nIf the error continues to happen try reinstall or contact the developer")
+                    elif msg=="Gates":
+                         self.gui.showError(errorCode,"Missing file when trying to load gates file.\nPlease ensure that the Gates.txt file exists in the data folder.\nIf the error continues to happen try reinstall or contact the developer")
+               elif errorCode==2:
+                    if msg=="System":
+                         self.gui.showError(errorCode,"Missing data when trying to load systems file.\nIf the error continues after re-starting the program try reinstall or contact the developer")
+                    elif msg=="Gates":
+                         self.gui.showError(errorCode,"Missing data when trying to load gates file.\nIf the error continues after re-starting the program try reinstall or contact the developer")
+               elif errorCode==3:
+                    if msg=="System":
+                         self.gui.showError(errorCode,"Corrupt data when trying to load systems file.\nIf the error continues after re-starting the program try reinstall or contact the developer")
+                    elif msg=="Gates":
+                         self.gui.showError(errorCode,"Corrupt data when trying to load gates file.\nIf the error continues after re-starting the program try reinstall or contact the developer")
+               elif errorCode==4:
+                    self.gui.showError(errorCode,"One of the systems " + msg + "is invalid and somehow you managed to get past the normal protection against this./nPlease use a different, valid, set of systems and try again :)/n(Also, Jove and Wormhole systems don't exist in the program as they currently have no way of normal route finding)")
+          else:
+               print("Handle error received error code: " + str(errorCode) + " Handle error cannot do anything while unit testing")
           #Error codes
           #0: Missing directory on load
           #1: Missing file on load
           #2: Missing data on load
           #3: Corrupt data on load
+          #4: Incorrect Systems for requested route
      def addSys(self, line):
 
                tempSys = System() #Create a sys object
                try:
                     tempSys = tempSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6],line[7])
                except IndexError:
-                    self.handleError(2)
+                    self.handleError(2, "Systems")
                     return "Error, System file missing data, error passed to GUI"
                except ValueError:
-                    self.handleError(3)
+                    self.handleError(3, "Systems")
                     return "Error, System file data corrupt, error passed to GUI"
                self.systems[line[3]] = tempSys; #Add the sys object to the systems dict, with the sys id as key
                self.nameList.append(line[0]); #Append the sys name to the name list
@@ -42,7 +67,7 @@ class Main:
                     else :
                          sysToLoad.append(line)
                except IndexError:
-                    self.handleError(2)
+                    self.handleError(2, "Systems")
                     return "Error, System file missing data, error passed to GUI"
           return sysToLoad
      
@@ -53,14 +78,14 @@ class Main:
                else:
                     os.chdir(specificPath)
           except WindowsError:
-               self.handleError(0)
+               self.handleError(0, "Systems")
                return "Error, missing path, error passed to GUI"
           lines = []; #Set up the lines array
           try:
                with open(specificFile, 'r') as sysFile: #Open the systems file
                     [lines.append(line.strip('\n')) for line in sysFile] #For each line in the file Append the line to the array after stripping the new line char
           except IOError:
-               self.handleError(1)
+               self.handleError(1, "Systems")
                return "Error, missing file, error passed to GUI"
           sysFile.close(); #Close the file
 
@@ -80,10 +105,10 @@ class Main:
                pos = [line[1], line[2], line[3]]; #Add the gate pos to an object
                tempSys.addGatePos(line[5], pos); #Add the gate pos to the system
           except IndexError:
-               self.handleError(2)
+               self.handleError(2, "Gates")
                return "Error, Gate file missing data, error passed to GUI"
           except KeyError:
-               self.handleError(3)
+               self.handleError(3, "Gates")
                return "Error, Gate file data corrupt, error passed to GUI"
 
      def loadGates(self, specificPath="", specificFile="Stargates.txt"):
@@ -91,13 +116,13 @@ class Main:
                try:
                     os.chdir(os.path.dirname(__file__)+ "\data"); #Set the current directory to the correct one
                except WindowsError:
-                    self.handleError(0)
+                    self.handleError(0, "Gates")
                     return "Error, missing path, error passed to GUI"
           else:
                try:
                     os.chdir(specificPath)
                except WindowsError:
-                    self.handleError(0)
+                    self.handleError(0, "Gates")
                     return "Error, missing path, error passed to GUI"
           lines = []
           try:
@@ -106,7 +131,7 @@ class Main:
                gatesLoaded = len(lines)
                [self.addGate(lines[i].split('\t')) for i in xrange(0,gatesLoaded) ]
           except IOError:
-               self.handleError(1)
+               self.handleError(1, "Gates")
                return "Error, missing file, error passed to GUI"
 
           return gatesLoaded
@@ -122,27 +147,29 @@ class Main:
                settings = self.ui.getSettings()#Get route type setting from UI
           except AttributeError:
                settings = [[self.systems[self.sysNames["Perimeter"]]]]
+          #Get which type of algorithm to use
+          algorithm = 'j' #TEMP
           #Get ship settings
           #Get Security filter setting
           avoidence = settings[0]#Get avoidance list
           #Get specific security status filtering
           #Get Sov setting
           #Generate route finder based on settings
-          routeFinder = RouteFinder(origin, destiniation, self.systems, avoidence) #Setup the route finder
+          routeFinder = RouteFinder(origin, destiniation, self.systems,avoidence, algorithm) #Setup the route finder
           return routeFinder
           
-     def findRoute(self, origin, destination):
+     def findRoute(self, origin, destination, routeType='normal'):
           try:
                oriSys = self.systems[self.sysNames[origin]] #Get the origin system
                destSys = self.systems[self.sysNames[destination]] #Get the destination system
           except KeyError:
-               self.handleError(4)
+               self.handleError(4, "" + origin + "\t" + destination)
                return "Error, incorrect/non-existant system, error passed to GUI"
           routeFinder = self.setupRouteFinder(oriSys, destSys) #Set up the route finder
           try:
-               route = routeFinder.getRoute('j') #Get the route
+               route = routeFinder.getRoute(routeType) #Get the route
           except Exception as e:
-               self.handleError(999)
+               self.handleError(999, str(e))
                return "Error, unknown route finder error, error passed to GUI"
           return route
 
@@ -168,7 +195,10 @@ class Main:
                self.setup(mode)
                self.runRandomTester()
           else:
-               self.setup(mode)
+               try:
+                    self.setup(mode)
+               except Exception as e:
+                    self.handleError(999, str(e))
 
 
 if __name__ == "__main__":

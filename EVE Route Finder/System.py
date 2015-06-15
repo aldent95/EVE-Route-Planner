@@ -12,7 +12,7 @@ class System:
         y = convert(y,1);
         z = convert(z,1);
         self.__pos = [x,y,z];
-        self.__security = security;
+        self.__security = round(float(security),1);
         self.__adjSyss = [];
         self.__gatePos = {};
         self.parent = []

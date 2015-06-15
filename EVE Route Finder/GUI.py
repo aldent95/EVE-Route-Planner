@@ -11,6 +11,7 @@ from SettingsMenu import SettingsMenu
 from AvoidenceMenu import AvoidenceMenu
 import webbrowser
 import threading
+from ErrorDialog import ErrorDialog
 
 class UI(threading.Thread):
     def initialize(self, namesList):
@@ -29,8 +30,7 @@ class UI(threading.Thread):
         self.root.columnconfigure(1,weight=1);
         self.root.columnconfigure(2,weight=1);
         self.root.columnconfigure(3,weight=1);
-        self.root.columnconfigure(4,weight=1);
-        self.root.rowconfigure(1,weight=1);#Configures the row uesd for the text area to automaticly resize
+        self.root.rowconfigure(2,weight=1);#Configures the row uesd for the text area to automaticly resize
         
         self.root.title("EVE Route Finder");#Sets the title
         self.root.grid();#Sets the layout to use grid
@@ -48,7 +48,7 @@ class UI(threading.Thread):
         self.setupButtons();
     def configureOutput(self):
         self.output = Text(self.root);#Setup the text area
-        self.output.grid(column=0,row=1,sticky='E'+'W'+'N'+'S',columnspan=5);#Place the text area, spanning 4 columns
+        self.output.grid(column=0,row=2,sticky='E'+'W'+'N'+'S',columnspan=5);#Place the text area, spanning 4 columns
         self.output.insert('end',"Output\n test\n");#Add some testing text to the text area
         self.output.configure(state='disabled');#Disable the text area
 
@@ -56,12 +56,22 @@ class UI(threading.Thread):
         self.output.tag_bind("a", "<Button-1>", self.showLink)
     def showLink(self, event):
         webbrowser.open(self.dotlanURL)
+    def showError(self, errorCode, errorMsg):
+        if errorCode in self.fatelErrors:
+            print("Fatal Error")
+            error=ErrorDialog(self.root, errorMsg,errorCode, True)
+        else:
+            error=ErrorDialog(self.root, errorMsg,errorCode)
     def configureMenu(self):
         #Handles configuring and setting up the menus
         menu = Menu(self.root);#Setup the menu bar
         menu.add_command(label="Settings",command=self.displaySettings)
         menu.add_command(label="Help",command=self.displayHelp)
         menu.add_command(label="Avoidence", command=self.displayAvoidence)
+        debugMenu = Menu(menu, tearoff=False)
+        debugMenu.add_command(label="Force Error",command=lambda : self.showError(50,"Test non-fatel Error"))
+        debugMenu.add_command(label="Force Fatal Error",command=lambda : self.showError(999,"Test fatel Error"))
+        menu.add_cascade(label="Debug", menu=debugMenu)
         self.root.config(menu=menu);
     def displaySettings(self):
         self.settingsMenu.deiconify();
@@ -71,18 +81,20 @@ class UI(threading.Thread):
         self.avoidenceMenu.deiconify()
     def setupButtons(self):
         #Handles creating and setting up all the buttons
-        calculateButton= Button(self.root, text="Calculate", command=self.getRoute)
-        calculateButton.grid(column=4,row=0,sticky='E'+'W')
+        Label(self.root, padx=2,text="Calculate:").grid(row=1,sticky='E'+'W')
+        normalButton= Button(self.root, text="Normal", command=lambda : self.getRoute('normal')).grid(column=1,row=1,sticky='E'+'W')
+        shortestButton= Button(self.root, text="Less Safe", command=lambda : self.getRoute('lessSafe')).grid(column=2,row=1,sticky='E'+'W')
+        safestButton= Button(self.root, text="Safest", command=lambda : self.getRoute('safe')).grid(column=3,row=1,sticky='E'+'W')
     def getSettings(self):
         avoidence = []
         avoidence = self.avoidenceMenu.getList()
         return [avoidence]
-    def getRoute(self,debug=False):
+    def getRoute(self,calcType, debug=False):
         systems = ""
         if(debug):
             systems = self.observer.findRoute("1DH-SX","Santola")
         else:
-            systems = self.observer.findRoute(self.origin.get(),self.des.get())
+            systems = self.observer.findRoute(self.origin.get(),self.des.get(), calcType)
         self.dotlanURL = buildDotlan(systems)
         jumps = len(systems)-1
         distance = 0
@@ -115,6 +127,7 @@ class UI(threading.Thread):
         self.output.configure(state='disabled')
     def run(self):
         self.root=Tk()
+        self.fatelErrors = [999,0,1,2,3]
         #Handles the initial call to create a GUI
         #Tk.__init__(self.root,parent);#Parent constructor
         self.initialize(self.namesList);#Initilize the GUI

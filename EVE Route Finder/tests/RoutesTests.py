@@ -79,7 +79,7 @@ class TestRouteMethods(unittest.TestCase):
         for i in xrange(0,len(self.testRoutes)):
             self.testRoute = RouteFinder(self.testRoutes[i][0], self.testRoutes[i][1], self.systems)
             expectedResult = int(self.testRoutes[i][2])
-            actualResult = len(self.testRoute.getRoute('j'))-1
+            actualResult = len(self.testRoute.getRoute('normal'))-1
             self.assertEqual(expectedResult, actualResult, "Fail: Route length not correct, must be a fault somewhere in route generation")
 
     def test_Negative_get_Route(self):
@@ -102,9 +102,9 @@ class TestRouteMethods(unittest.TestCase):
         line = self.testSysLine
         self.testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6],line[7])
         with self.assertRaises(GeneralError):
-            self.testRoute.jumpsRoute(self.testSys)
+            self.testRoute.jumpsRoute('normal',start=self.testSys)
         with self.assertRaises(GeneralError):
-            self.testRoute.jumpsRoute(end=self.testSys)
+            self.testRoute.jumpsRoute('normal',end=self.testSys)
     
 ##    def test_Positive_get_Route_Jumps_Avoidence(self):
 ##        self.testRoute = RouteFinder(self.testRoutes[0][0], self.testRoutes[0][1], self.systems, [self.testRoutes[0][0])
