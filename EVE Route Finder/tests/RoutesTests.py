@@ -106,11 +106,25 @@ class TestRouteMethods(unittest.TestCase):
         with self.assertRaises(GeneralError):
             self.testRoute.jumpsRoute('normal',end=self.testSys)
     
-##    def test_Positive_get_Route_Jumps_Avoidence(self):
-##        self.testRoute = RouteFinder(self.testRoutes[0][0], self.testRoutes[0][1], self.systems, [self.testRoutes[0][0])
-##        expectedResult = int(self.testRoutes[0][2])
-##        actualResult = len(self.testRoute.getRoute('j'))-1
-##        self.assertEqual(expectedResult, actualResult, "Fail: Route length not correct, must be a fault somewhere in route generation")
-##        actualResult = len(self.testRoute.getRoute('jtest'))-1
-##        self.assertEqual(expectedResult, actualResult, "Fail
+    def test_Positive_get_Route_Jumps_Avoidence(self):
+        self.testRoute = RouteFinder(self.systems[self.sysNames["Jita"]], self.systems[self.sysNames['Amarr']], self.systems, [self.systems[self.sysNames["Perimeter"]]])
+        expectedResult = 10
+        actualResult = len(self.testRoute.getRoute('normal'))-1
+        self.assertEqual(expectedResult, actualResult, "Fail: Route length not correct, must be a fault somewhere in route generation")
+
+    def test_Positive_get_Route_Jumps_Safe(self):
+        self.testRoute = RouteFinder(self.systems[self.sysNames["Jita"]], self.systems[self.sysNames['Hek']], self.systems, [])
+        expectedResult = 19
+        actualResult = len(self.testRoute.getRoute('safe'))-1
+        self.assertEqual(expectedResult, actualResult, "Fail: Route length not correct, must be a fault somewhere in route generation")
+    def test_Positive_get_Route_Jumps_LessSafe(self):
+        self.testRoute = RouteFinder(self.systems[self.sysNames["6-CZ49"]], self.systems[self.sysNames['Dodixie']], self.systems, [])
+        expectedResult = 16
+        actualResult = self.testRoute.getRoute('lessSafe')
+
+        for sys in actualResult:
+            print sys.getName()
+        print len(actualResult)-1
+        print self.systems[self.sysNames["Reblier"]].getSecurity()
+        self.assertEqual(expectedResult, len(actualResult)-1, "Fail: Route length not correct, must be a fault somewhere in route generation")
                     

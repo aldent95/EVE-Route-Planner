@@ -62,27 +62,29 @@ class RouteFinder:
         visited, queue = set(), [start]
         stuck = 0
         while queue:
-            sys = queue.pop(0)
-            if routeType == 'safe' and sys.getSecurity <= 0.4 and stuck != len(queue):
+            node = queue.pop(0)
+            if routeType == 'safe' and node.getSecurity() <= 0.4 and stuck != len(queue)+1:
                 stuck +=1
-                queue.extend([sys])
+                queue.extend([node])
                 continue
-            if routeType == 'lessSafe' and sys.getSecurity >= 0.5 and stuck !=len(queue):
+            if routeType == 'lessSafe' and node.getSecurity() >= 0.5 and stuck !=len(queue)+1:
+                #print("Skipping: " + sys.getName())
                 stuck +=1
-                queue.extend([sys])
+                queue.extend([node])
+                continue
             stuck = 0
-            if(sys in self.avoidence and sys != start and sys != end):
+            if(node in self.avoidence and node != start and node != end):
                 continue
-            if(sys == end):
-                route = self.buildRoute(sys, arrayID, start) #Build the route and return it
+            if(node == end):
+                route = self.buildRoute(node, arrayID, start) #Build the route and return it
                 self.currentCalcs -= 1 #Calc has finished so subtract one from the current calcs
                 return route
-            if sys not in visited:
-                visited.add(sys)
-                adj_systems = self.getAdj(sys)
+            if node not in visited:
+                visited.add(node)
+                adj_systems = self.getAdj(node)
                 for adjsys in adj_systems: #For each adjacent system id
                     if(adjsys not in visited and adjsys not in queue):
-                        adjsys.setParent(arrayID, sys)
+                        adjsys.setParent(arrayID, node)
                 queue.extend(adj_systems)
         raise GeneralError(7,'Ran out of adjacent systems? This shouldn\'t happen')
     
