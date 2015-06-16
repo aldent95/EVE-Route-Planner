@@ -90,6 +90,14 @@ class UI(threading.Thread):
         avoidence = self.avoidenceMenu.getList()
         return [avoidence]
     def getRoute(self,calcType, debug=False):
+        print(self.origin.get())
+        print(self.des.get())
+        if self.origin.get() == '' or self.des.get() == '':
+            self.output.configure(state='normal')
+            self.output.delete(1.0,'end')
+            self.output.insert('end', "Please enter an origin and a destiniation first")
+            self.output.configure(state='disabled')
+            return
         systems = ""
         if(debug):
             systems = self.observer.findRoute("1DH-SX","Santola")

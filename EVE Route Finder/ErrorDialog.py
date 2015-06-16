@@ -18,10 +18,23 @@ class ErrorDialog(Toplevel):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
-        self.rowconfigure(2, weight=1)
-        self.rowconfigure(3,weight=1)
-        w = 200  # Sets up the window position on the screen
-        h = 100
+        
+        Button(self,text="An interesting problem has occured!",command=self.showEasterEgg,borderwidth=0,relief='flat').grid(column=0,row=0)
+        
+        Label(self,text=str(errorCode),padx=10,pady=10).grid(row=1,column=0)
+        lines = errorMsg.split('\n')
+        print(lines)
+        for i in xrange(0,len(lines)):
+            self.rowconfigure(i+2, weight=1)
+            Label(self,text=lines[i],padx=5,pady=5, wraplength=290).grid(row=i+2,column=0)
+        self.rowconfigure(len(lines)+1,weight=1)
+        if toExit:
+            exitButton = Button(self,text="Exit",command=sys.exit).grid(column=0,row=len(lines)+3)
+        else:
+            exitButton = Button(self,text="Close",command=self.destroy).grid(column=0,row=len(lines)+3)
+        w = 300  # Sets up the window position on the screen
+        #print(len(lines))
+        h = 100+(30*len(lines))
         sw = self.winfo_screenwidth()
         sh = self.winfo_screenheight()
         x = (sw - w) / 2
@@ -29,13 +42,7 @@ class ErrorDialog(Toplevel):
         self.update()
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))
         self.resizable(width=0, height=0)
-        Button(self,text="An interesting problem has occured!",command=self.showEasterEgg,borderwidth=0,relief='flat').grid(column=0,row=0)
-        if toExit:
-            exitButton = Button(self,text="Exit",command=sys.exit).grid(column=0,row=3)
-        else:
-            exitButton = Button(self,text="Close",command=self.destroy).grid(column=0,row=3)
-        Label(self,text=str(errorCode),padx=10,pady=10).grid(row=1,column=0)
-        Label(self,text=errorMsg,padx=10,pady=10).grid(row=2,column=0)
+        
         self.update()
 
 class EasterEgg(Toplevel):

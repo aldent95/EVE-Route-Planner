@@ -9,7 +9,7 @@ import re #Regex library
 class AutoCompleteEntry(Entry):
     #Sets up the box and all the needed variables
     def __init__(self, parent, namesList):
-        Entry.__init__(self);#Parent constructor
+        Entry.__init__(self, parent);#Parent constructor
         self.namesList = namesList;#Store the list of word/names to search when typing into the box
         self.var = self["textvariable"];#Sets the local variable var to to textvariable of the Entry box
         if self.var == '': #If var is still empty then setup both var and self["textvariable"] to be a variable string

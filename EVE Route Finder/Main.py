@@ -31,7 +31,7 @@ class Main:
                     elif msg=="Gates":
                          self.gui.showError(errorCode,"Corrupt data when trying to load gates file.\nIf the error continues after re-starting the program try reinstall or contact the developer")
                elif errorCode==4:
-                    self.gui.showError(errorCode,"One of the systems " + msg + "is invalid and somehow you managed to get past the normal protection against this./nPlease use a different, valid, set of systems and try again :)/n(Also, Jove and Wormhole systems don't exist in the program as they currently have no way of normal route finding)")
+                    self.gui.showError(errorCode,"One of the systems " + msg + "is invalid and somehow you managed to get past the normal protection against this.\nPlease use a different, valid, set of systems and try again :)\n(Also, Jove and Wormhole systems don't exist in the program as they currently have no way of normal route finding)")
           else:
                print("Handle error received error code: " + str(errorCode) + " Handle error cannot do anything while unit testing")
           #Error codes
