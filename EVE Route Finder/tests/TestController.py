@@ -8,7 +8,7 @@ class TestController():
         suite1 = unittest.TestLoader().loadTestsFromTestCase(TestMainMethods)
         suite2 = unittest.TestLoader().loadTestsFromTestCase(TestSystemMethods)
         suite3 = unittest.TestLoader().loadTestsFromTestCase(TestRouteMethods)
-        testSuite = unittest.TestSuite([suite1, suite2, suite3])
+        testSuite = unittest.TestSuite([suite3])
         unittest.TextTestRunner(verbosity=2).run(testSuite)
 
 

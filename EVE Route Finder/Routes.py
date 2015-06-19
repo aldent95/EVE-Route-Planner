@@ -2,9 +2,10 @@
 import heapq
 from System import System
 from GeneralError import GeneralError
+import sys
 
 class RouteFinder:
-    def __init__(self, origin, destination, systems, avoidence = [],algorithmType='j'): #Setup the route finder
+    def __init__(self, origin, destination, systems, avoidence = [],algorithmType='j', waypoints=[]): #Setup the route finder
         if not isinstance(avoidence, list):
             raise TypeError("Avoidence list is not a list")
         for i in xrange(0, len(avoidence)):
@@ -21,6 +22,7 @@ class RouteFinder:
         self.systems = systems #initialize the systems array
         self.avoidence = avoidence
         self.algorithmType = algorithmType
+        self.waypoints = waypoints
         self.currentCalcs = 0 #Stores the current amount of running calculations
     def getSys(self, sysID): #Returns a system object given an id
         return self.systems[sysID]
@@ -38,8 +40,21 @@ class RouteFinder:
         #j for jumps, dl for default lightyear distance, du for au distance
         if routeType != 'normal' and routeType != 'safe' and routeType != 'lessSafe':
             raise GeneralError(6, "Correct/Useable route type not supplied")
+        if(len(self.waypoints) != 0):
+            return self.getWaypointRoute(routeType)               
         if( self.algorithmType == "j"):
-            return self.jumpsRoute(routeType)          
+            return self.jumpsRoute(routeType)
+
+    def getWaypointRoute(self, routeType):
+        route = []
+        for i in xrange(0,len(self.waypoints)-1):
+           if( self.algorithmType == "j"):
+            generatedRoute = self.jumpsRoute(routeType, self.waypoints[i], self.waypoints[i+1])
+            if i != 0:
+                generatedRoute.pop(0)
+            route.extend(generatedRoute)
+        return route
+    
     def buildRoute(self, node, arrayID, start): #Recursively Builds the route into an array of systems given a node/system
         if( (not isinstance(node, System)) or (not isinstance(start, System)) or (not isinstance(arrayID, int))):
             raise TypeError("Arguments provided are not of correct type")
@@ -51,41 +66,66 @@ class RouteFinder:
             route = self.buildRoute(node.getParent(arrayID), arrayID, start) #Call the method again on the parent node for the current node
             route.append(node) #After that returns append the current node
             return route #And return the route
-
     def jumpsRoute(self, routeType, start=None, end=None):
         if(type(start) == type(None)): #This and the next if cause start and end to default to mainStart and mainEnd if no custom start and end are given
             start = self.mainStart
         if(type(end) == type(None)):
             end = self.mainEnd
-        arrayID = self.currentCalcs
+        arrayId = self.currentCalcs
         self.currentCalcs +=1 #Increases the number of current calculations being run
-        visited, queue = set(), [start]
+        visited, queue= set(), [start]
+        start.setDepth(arrayId,0)
         stuck = 0
         while queue:
+            node = ""
             node = queue.pop(0)
+##            if node.getDepth(arrayId) == 3:
+##                print(node.getName())
+##                print(str(node.getDepth(arrayId)) + "\n")
+##                for system in queue:
+##                    print(system.getName())
+##                    print(str(system.getDepth(arrayId)) + "\n")
+##                sys.exit()
             if routeType == 'safe' and node.getSecurity() <= 0.4 and stuck != len(queue)+1:
                 stuck +=1
                 queue.extend([node])
                 continue
             if routeType == 'lessSafe' and node.getSecurity() >= 0.5 and stuck !=len(queue)+1:
-                #print("Skipping: " + sys.getName())
-                stuck +=1
-                queue.extend([node])
-                continue
+                noLS = True
+                for adjSys in self.getAdj(node):
+                    if adjSys.getSecurity() <=0.4:
+                        noLS = False
+                if noLS:
+                    #print("Skipping: " + sys.getName())
+                    stuck +=1
+                    queue.extend([node])
+                    continue
             stuck = 0
             if(node in self.avoidence and node != start and node != end):
                 continue
             if(node == end):
-                route = self.buildRoute(node, arrayID, start) #Build the route and return it
+                route = self.buildRoute(node, arrayId, start) #Build the route and return it
                 self.currentCalcs -= 1 #Calc has finished so subtract one from the current calcs
                 return route
             if node not in visited:
                 visited.add(node)
                 adj_systems = self.getAdj(node)
-                for adjsys in adj_systems: #For each adjacent system id
+                for adjsys in adj_systems:
                     if(adjsys not in visited and adjsys not in queue):
-                        adjsys.setParent(arrayID, node)
-                queue.extend(adj_systems)
+                        adjsys.setParent(arrayId, node)
+                        adjsys.setDepth(arrayId, node.getDepth(arrayId)+1)
+                        queue.append(adjsys)
+##                    elif adjsys.getDepth(arrayId)+1 < node.getDepth(arrayId) and node.getDepth(arrayId) != 999:
+##                        node.setParent(arrayId, adjsys)
+##                        node.setDepth(arrayId, adjsys.getDepth(arrayId)+1)
+##                        queue.insert(0,node)
+##                    elif adjsys in visited and adjsys not in queue and node.getDepth(arrayId)+1 < adjsys.getDepth(arrayId):
+##                        visited.remove(adjsys)
+##                        adjsys.setParent(arrayId, node)
+##                        adjsys.setDepth(arrayId, node.getDepth(arrayId)+1)
+##                        queue.insert(0,adjsys)
+                        
+
         raise GeneralError(7,'Ran out of adjacent systems? This shouldn\'t happen')
     
 ##    def get_h(self, node, routeType, start="", end=""): #Get the estimated cost of getting to the end system. Different calculations are used depending on what

@@ -146,16 +146,22 @@ class Main:
           try:
                settings = self.ui.getSettings()#Get route type setting from UI
           except AttributeError:
-               settings = [[self.systems[self.sysNames["Perimeter"]]]]
+               settings = [["Perimeter"], []]
           #Get which type of algorithm to use
           algorithm = 'j' #TEMP
+          #Get Waypoints
+          waypoints = settings[1]
+          for i in xrange(0,len(waypoints)):
+               waypoints[i]=self.systems[self.sysNames[waypoints[i]]]
           #Get ship settings
           #Get Security filter setting
           avoidence = settings[0]#Get avoidance list
+          for i in xrange(0,len(avoidence)):
+               avoidence[i]=self.systems[self.sysNames[avoidence[i]]]
           #Get specific security status filtering
           #Get Sov setting
           #Generate route finder based on settings
-          routeFinder = RouteFinder(origin, destiniation, self.systems,avoidence, algorithm) #Setup the route finder
+          routeFinder = RouteFinder(origin, destiniation, self.systems,avoidence, algorithm, waypoints) #Setup the route finder
           return routeFinder
           
      def findRoute(self, origin, destination, routeType='normal'):

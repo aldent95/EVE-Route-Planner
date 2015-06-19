@@ -10,6 +10,7 @@ class AutoCompleteEntry(Entry):
     #Sets up the box and all the needed variables
     def __init__(self, parent, namesList):
         Entry.__init__(self, parent);#Parent constructor
+        self.parent = parent
         self.namesList = namesList;#Store the list of word/names to search when typing into the box
         self.var = self["textvariable"];#Sets the local variable var to to textvariable of the Entry box
         if self.var == '': #If var is still empty then setup both var and self["textvariable"] to be a variable string
@@ -33,7 +34,7 @@ class AutoCompleteEntry(Entry):
             words = self.findWords(); #Finds all the words that contain the current entry box text
             if len(words) != 0:#If there are words found
                 if not self.listBox_Displayed:#If the list box is not displayed
-                    self.listBox = Listbox();#Create the list box
+                    self.listBox = Listbox(self.parent);#Create the list box
                     self.listBox.bind("<Double-Button-1>", self.selection);#Bind double left click to select from the list
                     self.listBox.bind("<Return>",self.selection);#Bind the return/enter key to make a selection from the list
                     self.listBox.place(x=self.winfo_x(), y=self.winfo_y()+self.winfo_height());#Set the list box to appear below the entry box

@@ -45,6 +45,8 @@ class AvoidenceMenu(Toplevel):
         for entry in avoidList:
             file.write(entry+"\t")
         file.close()
+    def getList(self):
+        return self.avoidList
     def hide(self):  # Hides the window
         self.withdraw()
     def configureOutput(self):

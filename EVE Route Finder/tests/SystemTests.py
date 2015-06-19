@@ -82,11 +82,11 @@ class TestSystemMethods(unittest.TestCase):
         testSys = System()
         testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
         parent = self.main.systems[self.correctGateData[0][5]]
-        testSys.setParent(0, parent)
-        self.assertEqual(testSys.getParent(0), parent, "Fail: Parent stored incorrectly or at incorrect num")
+        testSys.setParent(parent)
+        self.assertEqual(testSys.getParent(), parent, "Fail: Parent stored incorrectly or at incorrect num")
         parent = self.main.systems[self.correctGateData[1][5]]
-        testSys.setParent(10, parent)
-        self.assertEqual(testSys.getParent(10), parent, "Fail: Parent stored incorrectly or at incorrect num")
+        testSys.setParent(parent)
+        self.assertEqual(testSys.getParent(), parent, "Fail: Parent stored incorrectly or at incorrect num")
     def test_NegativesetgetParent(self):
         self.main.loadSystems()
         line = self.correctSysLine
@@ -94,11 +94,7 @@ class TestSystemMethods(unittest.TestCase):
         testSys.build(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7])
         parent = self.main.systems[self.correctGateData[0][5]]
         with self.assertRaises(TypeError):
-            testSys.setParent("Fail", parent)
-        with self.assertRaises(TypeError):
-            testSys.setParent(1, "Fail")
-        with self.assertRaises(IndexError):
-            testSys.getParent(9)
+            testSys.setParent("Fail")
     def test_PositiveaddgetGatePos(self):
         self.main.loadSystems()
         line = self.correctSysLine
