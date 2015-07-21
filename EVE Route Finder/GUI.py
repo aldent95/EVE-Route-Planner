@@ -12,7 +12,6 @@ from AvoidenceMenu import AvoidenceMenu
 import webbrowser
 import threading
 from ErrorDialog import ErrorDialog
-from WaypointsMenu import WaypointsMenu
 
 class UI(threading.Thread):
     def initialize(self, namesList):
@@ -31,7 +30,6 @@ class UI(threading.Thread):
         self.root.columnconfigure(1,weight=1);
         self.root.columnconfigure(2,weight=1);
         self.root.columnconfigure(3,weight=1);
-        self.root.columnconfigure(4,weight=1);
         self.root.rowconfigure(2,weight=1);#Configures the row uesd for the text area to automaticly resize
         
         self.root.title("EVE Route Finder");#Sets the title
@@ -81,31 +79,19 @@ class UI(threading.Thread):
         self.helpMenu.deiconify();
     def displayAvoidence(self):
         self.avoidenceMenu.deiconify()
-    def displayWaypoints(self):
-        self.waypointsMenu.deiconify()
-    def checkboxChanged(self):
-        self.origin.delete(0,'end')
-        self.des.delete(0, 'end')
-        if(self.useWaypoints.get()):
-            print("Pasting")
-            self.origin.insert('end', self.waypointsMenu.getStart())
-            self.des.insert('end', self.waypointsMenu.getEnd())
     def setupButtons(self):
         #Handles creating and setting up all the buttons
-        self.useWaypoints = IntVar()
         Label(self.root, padx=2,text="Calculate:").grid(row=1,sticky='E'+'W')
         normalButton= Button(self.root, text="Normal", command=lambda : self.getRoute('normal')).grid(column=1,row=1,sticky='E'+'W')
         shortestButton= Button(self.root, text="Less Safe", command=lambda : self.getRoute('lessSafe')).grid(column=2,row=1,sticky='E'+'W')
         safestButton= Button(self.root, text="Safest", command=lambda : self.getRoute('safe')).grid(column=3,row=1,sticky='E'+'W')
-        waypointButton = Button(self.root, text="Waypoints", command=self.displayWaypoints).grid(column=4,row=0,sticky='E'+'W')
-        useWaypoints = Checkbutton(self.root, text="Use Waypoints?", command=self.checkboxChanged, variable = self.useWaypoints).grid(column=4, row=1, sticky='E'+'W')
     def getSettings(self):
         avoidence = []
         avoidence = self.avoidenceMenu.getList()
-        waypoints = []
-        wapoints = self.waypointsMenu.getList()
-        return [avoidence, waypoints]
-    def getRoute(self,calcType):
+        return [avoidence]
+    def getRoute(self,calcType, debug=False):
+        print(self.origin.get())
+        print(self.des.get())
         if self.origin.get() == '' or self.des.get() == '':
             self.output.configure(state='normal')
             self.output.delete(1.0,'end')
@@ -113,7 +99,10 @@ class UI(threading.Thread):
             self.output.configure(state='disabled')
             return
         systems = ""
-        systems = self.observer.findRoute(self.origin.get(),self.des.get(), calcType)
+        if(debug):
+            systems = self.observer.findRoute("1DH-SX","Santola")
+        else:
+            systems = self.observer.findRoute(self.origin.get(),self.des.get(), calcType)
         self.dotlanURL = buildDotlan(systems)
         jumps = len(systems)-1
         distance = 0
@@ -153,7 +142,6 @@ class UI(threading.Thread):
         self.helpMenu = HelpMenu(self.root);
         self.settingsMenu = SettingsMenu(self.root);
         self.avoidenceMenu = AvoidenceMenu(self.root, self.namesList)
-        self.waypointsMenu = WaypointsMenu(self.root, self.namesList, self)
         #Set up the observe so that we can tell it when we want a route
         self.dotlanURL = "evemaps.dotlan.net"
         #self.getRoute(True)

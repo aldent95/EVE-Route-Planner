@@ -4,7 +4,7 @@ import math
 class System:
     
     def build(self, name, constellation, region, sysID, x, y, z, security):
-        self.sysID = sysID;
+        self.__sysID = sysID;
         self.__name = name;
         self.__constellation = constellation;
         self.__region = region;
@@ -16,7 +16,6 @@ class System:
         self.__adjSyss = [];
         self.__gatePos = {};
         self.parent = []
-        self.depth = []
         return(self)
     def addadjSys(self, adjSys):
         if isinstance(adjSys, System):
@@ -32,19 +31,7 @@ class System:
             self.parent.append("")
         self.parent[num] = entry
     def getParent(self, num):
-        try:
-            return self.parent[num]
-        except IndexError:
-            return ""
-    def setDepth(self,num,depth):
-        while len(self.depth) <= num:
-            self.depth.append(999)
-        self.depth[num] = depth
-    def getDepth(self, num):
-        try:
-            return self.depth[num]
-        except IndexError:
-            return 999
+        return self.parent[num]
     def addGatePos(self, gate, pos):
         pos[0] = convert(pos[0],2)
         pos[1] = convert(pos[1],2)
@@ -67,7 +54,7 @@ class System:
     def getadjSyss(self):
         return self.__adjSyss;
     def getID(self):
-        return self.sysID;
+        return self.__sysID;
     def getName(self):
         return self.__name;
     def getConstellation(self):
@@ -98,13 +85,9 @@ class System:
         distance = (math.sqrt(x+y+z))/1000;
         return distance;
     def __eq__(self, other):
-        if not isinstance(other, System):
-            return False
-        return self.getID() == other.getID()
+        return self.__dict__ == other.__dict__
     def __hash__(self):
-        return hash(self.sysID)
-    def __init__(self):
-        self.sysID = 0
+        return hash(self.__sysID)
 
 
 
