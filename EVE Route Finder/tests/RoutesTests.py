@@ -121,6 +121,10 @@ class TestRouteMethods(unittest.TestCase):
         self.testRoute = RouteFinder(self.systems[self.sysNames["6-CZ49"]], self.systems[self.sysNames['Dodixie']], self.systems, [])
         expectedResult = 16
         actualResult = self.testRoute.getRoute('lessSafe')
+    def test_Positive_get_Route_Jumps_LessSafe2(self):
+        self.testRoute = RouteFinder(self.systems[self.sysNames["Jita"]], self.systems[self.sysNames['Amarr']], self.systems, [])
+        expectedResult = 40
+        actualResult = self.testRoute.getRoute('lessSafe')
 
         for sys in actualResult:
             print sys.getName()
